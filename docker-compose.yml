@@ -1,0 +1,11 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    ports:
+      - "5436:5432"
+    volumes:
+      - ./postgre_data:/var/lib/postgresql/data
