@@ -11,11 +11,11 @@ interface HasId {
   id: string;
 }
 
-export abstract class BaseAbstractRepostitory<T extends HasId>
+export class BaseRepostitory<T extends HasId>
   implements BaseInterfaceRepository<T>
 {
   private entity: Repository<T>;
-  protected constructor(entity: Repository<T>) {
+  constructor(entity: Repository<T>) {
     this.entity = entity;
   }
 

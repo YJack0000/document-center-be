@@ -3,6 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { DocumentModule } from './document/document.module';
+import { Document } from './document/document.entity';
 
 @Module({
   imports: [
@@ -18,10 +20,11 @@ import { ConfigModule } from '@nestjs/config';
           autoLoadEntities: true,
           synchronize: true,
           host: 'localhost',
-          entities: [],
+          entities: [Document],
         };
       },
     }),
+    DocumentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
