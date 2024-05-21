@@ -3,7 +3,8 @@ import { IDocumentRepository } from 'src/document/document.interface';
 import { BaseRepostitory } from '../common/base.repository';
 import { Document } from 'src/document/document.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
+import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 
 @Injectable()
 export class DocumentRepository
@@ -15,5 +16,15 @@ export class DocumentRepository
     documentRepository: Repository<Document>,
   ) {
     super(documentRepository);
+  }
+
+  public create(data: DeepPartial<Document>): Document {
+    data.status = 'edit';
+    if (!data.createAt){
+      data.createAt = new Date();
+    }
+    data.updateAt = new Date();
+
+    return super.create(data);
   }
 }

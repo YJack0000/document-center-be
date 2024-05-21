@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { IDocumentRepository } from './document.interface';
 import { Document } from './document.entity';
+import { CreateDocumentDto } from './dto/document.dto';
 
 @Injectable()
 export class DocumentService {
@@ -15,5 +16,39 @@ export class DocumentService {
   async getDocuments(): Promise<Document[]> {
     this.logger.log(`Get Documents`);
     return await this.documentRepository.findAll();
+  }
+
+  async createDocument(body: CreateDocumentDto): Promise<string> {
+    this.logger.log(`Create Document`);
+    const document = this.documentRepository.create(body);
+    const result = await this.documentRepository.save(document);
+
+    return `Document created: ${result.id}`;
+  }
+
+  async updateDocument(documentId: string, body: CreateDocumentDto): Promise<string> {
+    this.logger.log(`Update Document`);
+    const document = await this.documentRepository.findOneById(documentId);
+    if (!document) {
+      return 'Document not found';
+    }
+
+    const updatedDocument = this.documentRepository.create(body);
+    updatedDocument.id = documentId;
+    await this.documentRepository.save(updatedDocument);
+
+    return `Document updated: ${documentId}`;
+  }
+
+  async deleteDocument(documentId: string): Promise<string> {
+    this.logger.log(`Delete Document`);
+    const document = await this.documentRepository.findOneById(documentId);
+    if (!document) {
+      return 'Document not found';
+    }
+
+    await this.documentRepository.remove(document);
+
+    return `Document deleted: ${documentId}`;
   }
 }
