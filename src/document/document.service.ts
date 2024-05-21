@@ -18,6 +18,16 @@ export class DocumentService {
     return await this.documentRepository.findAll();
   }
 
+  async getDocumentById(documentId: string): Promise<Document | null> {
+    this.logger.log(`Getting document by ID: ${documentId}`);
+    const document = await this.documentRepository.findOneById(documentId);
+    if (!document) {
+      this.logger.warn(`Document not found: ID ${documentId}`);
+      return null;
+    }
+    return document;
+  }
+
   async createDocument(body: CreateDocumentDto): Promise<string> {
     this.logger.log(`Create Document`);
     const document = this.documentRepository.create(body);
@@ -51,4 +61,5 @@ export class DocumentService {
 
     return `Document deleted: ${documentId}`;
   }
+
 }
