@@ -9,6 +9,20 @@ on:
       - '*'
 
 jobs:
+  scan:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+      - uses: snyk/actions/setup@master
+      - name: Snyk monitor
+        run: snyk test
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
   test:
     runs-on: ubuntu-latest
     steps:
@@ -38,17 +52,3 @@ jobs:
       - run: npm test
         env:
           CI: true
-
-  scan:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '16'
-      - uses: snyk/actions/setup@master
-      - name: Snyk monitor
-        run: snyk test
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
