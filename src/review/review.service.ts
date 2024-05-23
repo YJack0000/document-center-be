@@ -12,41 +12,15 @@ export class ReviewService {
         this.logger = new Logger(ReviewService.name);
     }
 
-    async getReviews(): Promise<Review[]> {
-        this.logger.log(`Get Reviews`);
-        return await this.reviewRepository.findAll();
-    }
-    async createReview(body: CreateReviewDto): Promise<string> {
-        this.logger.log(`Create Review`);
-        const review = this.reviewRepository.create(body);
-        const result = await this.reviewRepository.save(review);
-
-        return `Review created: ${result.id}`;
+    async getReviews(documentId: string): Promise<Review[]> {
+        return await this.reviewRepository.findAll({ where: { document_id: documentId } });
     }
 
-    async updateReview(reviewId: string, body: CreateReviewDto): Promise<string> {
-        this.logger.log(`Update Review`);
-        const review = await this.reviewRepository.findOneById(reviewId);
-        if (!review) {
-            return 'Review not found';
-        }
-
-        const updatedReview = this.reviewRepository.create(body);
-        updatedReview.id = reviewId;
-        await this.reviewRepository.save(updatedReview);
-
-        return `Review updated: ${reviewId}`;
-    }
-
-    async deleteReview(reviewId: string): Promise<string> {
-        this.logger.log(`Delete Review`);
-        const review = await this.reviewRepository.findOneById(reviewId);
-        if (!review) {
-            return 'Review not found';
-        }
-
-        await this.reviewRepository.remove(review);
-
-        return `Review deleted: ${reviewId}`;
+    async createReview(documentId: string, createReviewDto: CreateReviewDto): Promise<Review> {
+        const review = this.reviewRepository.create({
+            ...createReviewDto,
+            document_id: documentId
+        });
+        return await this.reviewRepository.save(review);
     }
 }

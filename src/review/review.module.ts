@@ -1,7 +1,7 @@
 import { Logger, Module } from '@nestjs/common';
 import { ReviewService } from './review.service';
-import { ReviewController } from '../controllers/comment.controller';
-import { ReviewRepository } from 'src/repositories/comment.repository';
+import { ReviewController } from '../controllers/review.controller';
+import { ReviewRepository } from 'src/repositories/review.repository';
 import { IReviewRepository } from './review.interface';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Review } from './review.entity';

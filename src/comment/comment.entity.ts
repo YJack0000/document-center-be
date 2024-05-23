@@ -2,15 +2,24 @@ import {
     Column,
     Entity,
     PrimaryGeneratedColumn,
+    ManyToMany,
+    ManyToOne,
+    JoinColumn
 } from 'typeorm';
+import { Document } from '../document/document.entity';
 
 @Entity()
 export class Comment {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
+    @ManyToMany(() => Document)
+    @JoinColumn({ name: "document_id" })
     document_id: string;
+
+    @ManyToMany(() => Document)
+    @JoinColumn({ name: "document_id" })
+    document: Document;
 
     @Column()
     user_id: string;
@@ -23,4 +32,7 @@ export class Comment {
 
     @Column()
     createAt: Date;
+
+    @ManyToMany(() => Document, document => document.comments)
+    documents: Document[];
 }
