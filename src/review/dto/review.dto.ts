@@ -17,3 +17,13 @@ export class UpdateReviewDto {
     @ApiProperty()
     status: string;
 }
+
+export class AssignReviewerDto {
+    @ApiProperty()
+    reviewer_id: string;
+}
+
+export class UpdateReviewerDto {
+    @ApiProperty()
+    reviewer_id: string;
+}

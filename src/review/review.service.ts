@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { IReviewRepository } from './review.interface';
 import { Review } from './review.entity';
-import { CreateReviewDto } from './dto/review.dto';
+import { AssignReviewerDto, CreateReviewDto, UpdateReviewerDto } from './dto/review.dto';
 @Injectable()
 export class ReviewService {
     constructor(
@@ -22,5 +22,23 @@ export class ReviewService {
             document_id: documentId
         });
         return await this.reviewRepository.save(review);
+    }
+    async assignReviewer(documentId: string, body: AssignReviewerDto): Promise<string> {
+        const review = await this.reviewRepository.findOneById(documentId);
+        if (!review) {
+            return 'Review not found';
+        }
+        review.document_id = documentId;
+        await this.reviewRepository.save(review);
+        return `Review assigned to document: ${documentId}`;
+    }
+    async updateReviewer(documentId: string, body: UpdateReviewerDto): Promise<string> {
+        const review = await this.reviewRepository.findOneById(documentId);
+        if (!review) {
+            return 'Review not found';
+        }
+        review.document_id = documentId;
+        await this.reviewRepository.save(review);
+        return `Review updated: ${documentId}`;
     }
 }
