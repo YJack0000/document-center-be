@@ -2,11 +2,11 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateDocumentDto {
 	@ApiProperty()
-  ownerId: string;
+	ownerId: string;
 	@ApiProperty()
-  title: string;
+	title: string;
 	@ApiProperty()
-  content: string;
+	content: string;
 }
 
 export class UpdateDocumentDto {
@@ -14,4 +14,20 @@ export class UpdateDocumentDto {
 	title: string;
 	@ApiProperty()
 	content: string;
+}
+
+export class UpdateDocumentStatusDto {
+	@ApiProperty()
+	status: 'edit' | 'pass';
+}
+
+export class PublicDocumentDto {
+	@ApiProperty()
+	ownerId: string;
+	@ApiProperty()
+	title: string;
+	@ApiProperty()
+	content: string;
+	@ApiProperty()
+	public: boolean;
 }

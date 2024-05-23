@@ -12,8 +12,7 @@ interface HasId {
 }
 
 export class BaseRepostitory<T extends HasId>
-  implements BaseInterfaceRepository<T>
-{
+  implements BaseInterfaceRepository<T> {
   private entity: Repository<T>;
   constructor(entity: Repository<T>) {
     this.entity = entity;
@@ -39,6 +38,7 @@ export class BaseRepostitory<T extends HasId>
     const options: FindOptionsWhere<T> = {
       id: id,
     };
+    console.log(id)
     return await this.entity.findOneBy(options);
   }
 
@@ -65,4 +65,10 @@ export class BaseRepostitory<T extends HasId>
   public async findOne(options: FindOneOptions<T>): Promise<T> {
     return this.entity.findOne(options);
   }
+  /*public async findPublicDocuments(): Promise<Document[]> {
+    return this.entity.find({
+      where: { public: true }
+    });
+  }*/
+
 }

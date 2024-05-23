@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { DocumentModule } from './document/document.module';
 import { Document } from './document/document.entity';
+import { PublicDocumentModule } from './public-document/public-document.module';
 
 @Module({
   imports: [
@@ -25,8 +26,9 @@ import { Document } from './document/document.entity';
       },
     }),
     DocumentModule,
+    PublicDocumentModule
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

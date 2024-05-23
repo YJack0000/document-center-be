@@ -61,5 +61,35 @@ export class DocumentService {
 
     return `Document deleted: ${documentId}`;
   }
+  async updateDocumentStatus(documentId: string, status: 'edit' | 'pass'): Promise<string> {
+    this.logger.log(`Update Document Status for ID: ${documentId}`);
 
+    const document = await this.documentRepository.findOneById(documentId);
+    if (!document) {
+      return 'Document not found';
+    }
+
+    document.status = status;
+    await this.documentRepository.save(document);
+
+    return `Document status updated to ${status} for Document ID: ${documentId}`;
+  }
+
+  async getDocumentsByOwner(ownerId: string): Promise<any> {
+    this.logger.log(`Get documents assigned to owner: ${ownerId}`);
+    const documents = await this.documentRepository.findByCondition({ where: { ownerId: ownerId } });
+    if (!documents) {
+      return `No documents found for owner: ${ownerId}`;
+    }
+    return documents;
+  }
+
+  /*async getPulicDocuments(): Promise<any> {
+    this.logger.log(`Get public documents`);
+    const documents = await this.documentRepository.findByCondition({ where: { public: true } });
+    if (!documents) {
+      return `No public documents found`;
+    }
+    return documents;
+  }*/
 }
