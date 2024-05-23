@@ -6,7 +6,11 @@ import { ConfigModule } from '@nestjs/config';
 import { DocumentModule } from './document/document.module';
 import { Document } from './document/document.entity';
 import { PublicDocumentModule } from './public-document/public-document.module';
-
+import { PublicDocument } from './public-document/public-document.entity';
+import { CommentModule } from './comment/comment.module';
+import { Comment } from './comment/comment.entity';
+import { ReviewModule } from './review/review.module';
+import { Review } from './review/review.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,12 +25,14 @@ import { PublicDocumentModule } from './public-document/public-document.module';
           autoLoadEntities: true,
           synchronize: true,
           host: 'localhost',
-          entities: [Document],
+          entities: [Document, PublicDocument, Comment, Review],
         };
       },
     }),
     DocumentModule,
-    PublicDocumentModule
+    PublicDocumentModule,
+    CommentModule,
+    ReviewModule
   ],
   controllers: [AppController],
   providers: [AppService],
