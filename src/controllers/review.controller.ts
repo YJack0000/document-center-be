@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, HttpException, HttpStatus } from '@nestjs/common';
 import { ReviewService } from '../review/review.service';
 import { Review } from '../review/review.entity';
 import { AssignReviewerDto, CreateReviewDto, UpdateReviewerDto } from 'src/review/dto/review.dto';
@@ -12,8 +12,8 @@ export class ReviewController {
     }
     @Post(':documentId')
     async createReview(@Param('documentId') documentId: string,
-        @Body() body: CreateReviewDto): Promise<Review> {
-        return await this.reviewService.createReview(documentId, body);
+        @Body() body: CreateReviewDto): Promise<any> {
+            return await this.reviewService.createReview(documentId, body);
     }
     @Post(':documentId/assign')
     async assignReviewer(@Param('documentId') documentId: string,
