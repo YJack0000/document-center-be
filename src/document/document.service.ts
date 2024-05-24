@@ -61,7 +61,7 @@ export class DocumentService {
 
     return `Document deleted: ${documentId}`;
   }
-  async updateDocumentStatus(documentId: string, status: 'edit' | 'pass'): Promise<string> {
+  async updateDocumentStatus(documentId: string, status: 'review' | 'reject' | 'pass' | 'edit'): Promise<string> {
     this.logger.log(`Update Document Status for ID: ${documentId}`);
 
     const document = await this.documentRepository.findOneById(documentId);

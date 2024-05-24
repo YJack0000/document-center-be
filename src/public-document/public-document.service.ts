@@ -15,7 +15,11 @@ export class PublicDocumentService {
 
     async getPublicDocuments(): Promise<PublicDocument[]> {
         this.logger.log(`Get PublicDocuments`);
-        return await this.publicdocumentRepository.findAll({ where: { public: true } });
+        return await this.publicdocumentRepository
+            .createQueryBuilder("publicDocument")
+            .innerJoinAndSelect("publicDocument.document", "document")
+            .where("document.status = :status", { status: 'pass' })
+            .getMany();
     }
 
     async createPublicDocument(body: CreatePublicDocumentDto): Promise<string> {

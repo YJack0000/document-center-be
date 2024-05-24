@@ -4,7 +4,7 @@ import { PublicDocument } from '../public-document/public-document.entity';
 import { CreateDocumentDto } from 'src/document/dto/document.dto';
 import { CreatePublicDocumentDto } from 'src/public-document/dto/public-document.dto';
 
-@Controller('document/public')
+@Controller('documents/public')
 export class PublicDocumentController {
     constructor(private readonly publicdocumentService: PublicDocumentService) { }
 
@@ -13,7 +13,7 @@ export class PublicDocumentController {
         return await this.publicdocumentService.getPublicDocuments();
     }
 
-    @Post('')
+    @Post()
     async createPublicDocument(@Body() body: CreatePublicDocumentDto): Promise<string> {
         return await this.publicdocumentService.createPublicDocument(body);
     }

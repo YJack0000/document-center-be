@@ -4,12 +4,12 @@ import {
     JoinColumn,
     OneToOne,
     PrimaryColumn,
-    PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Document } from '../document/document.entity';
-Entity()
+
+@Entity()
 export class PublicDocument {
-    @OneToOne(() => Document)
+    @OneToOne(() => Document, document => document.publicDocument)
     @JoinColumn({ name: "id" })
     document: Document;
 
@@ -17,7 +17,7 @@ export class PublicDocument {
     id: string;
 
     @Column()
-    ownerId: string;
+    owner_id: string;
 
     @Column()
     title: string;
@@ -30,4 +30,4 @@ export class PublicDocument {
 
     @Column()
     updateAt: Date;
-}
+}  

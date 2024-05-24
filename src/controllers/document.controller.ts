@@ -50,7 +50,7 @@ export class DocumentStatusController {
     @Param('documentId') documentId: string,
     @Body() updateDocumentStatusDto: UpdateDocumentStatusDto
   ): Promise<any> {
-    const validStatuses = ['edit', 'pass'];
+    const validStatuses = ['edit', 'review', 'reject', 'pass'];
     if (!validStatuses.includes(updateDocumentStatusDto.status)) {
       throw new HttpException(`Invalid status. Allowed statuses are: ${validStatuses.join(', ')}`, HttpStatus.BAD_REQUEST);
     }

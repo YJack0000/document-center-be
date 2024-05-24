@@ -3,10 +3,12 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   ManyToMany,
-  JoinTable
+  JoinTable,
+  OneToOne
 } from 'typeorm';
 import { Review } from '../review/review.entity';
 import { Comment } from '../comment/comment.entity';
+import { PublicDocument } from '../public-document/public-document.entity';
 
 @Entity()
 export class Document {
@@ -23,7 +25,7 @@ export class Document {
   content: string;
 
   @Column({
-    enum: ['edit', 'review', 'reject', 'pass'],
+    enum: ['review', 'reject', 'pass', 'edit'],
   })
   status: string;
 
@@ -39,4 +41,7 @@ export class Document {
   @ManyToMany(() => Comment, comment => comment.documents)
   @JoinTable()
   comments: Comment[];
+
+  @OneToOne(() => PublicDocument, publicDocument => publicDocument.document)
+  publicDocument: PublicDocument;
 }
