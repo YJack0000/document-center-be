@@ -24,20 +24,24 @@ export class ReviewService {
         return await this.reviewRepository.save(review);
     }
     async assignReviewer(documentId: string, body: AssignReviewerDto): Promise<string> {
-        const review = await this.reviewRepository.findOneById(documentId);
+        const reviews = await this.reviewRepository.findAll({ where: { document_id: documentId } });
+        const review = reviews[0];
         if (!review) {
             return 'Review not found';
         }
         review.document_id = documentId;
+        review.reviewer_id = body.reviewer_id;
         await this.reviewRepository.save(review);
         return `Review assigned to document: ${documentId}`;
     }
     async updateReviewer(documentId: string, body: UpdateReviewerDto): Promise<string> {
-        const review = await this.reviewRepository.findOneById(documentId);
+        const reviews = await this.reviewRepository.findAll({ where: { document_id: documentId } });
+        const review = reviews[0];
         if (!review) {
             return 'Review not found';
         }
         review.document_id = documentId;
+        review.reviewer_id = body.reviewer_id;
         await this.reviewRepository.save(review);
         return `Review updated: ${documentId}`;
     }
