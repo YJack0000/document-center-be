@@ -39,23 +39,12 @@ export class DocumentController {
   async getAssignedDocuments(@Param('ownerId') ownerId: string): Promise<Document[]> {
     return await this.documentService.getDocumentsByOwner(ownerId);
   }
-}
-
-@Controller('documents/status')
-export class DocumentStatusController {
-  constructor(private readonly documentService: DocumentService) { }
-
-  @Put(':documentId')
+  @Put('/status/:documentId')
   async updateDocumentStatus(
     @Param('documentId') documentId: string,
     @Body() updateDocumentStatusDto: UpdateDocumentStatusDto
   ): Promise<any> {
-    const validStatuses = ['edit', 'pass'];
-    if (!validStatuses.includes(updateDocumentStatusDto.status)) {
-      throw new HttpException(`Invalid status. Allowed statuses are: ${validStatuses.join(', ')}`, HttpStatus.BAD_REQUEST);
-    }
-
-    const updated = await this.documentService.updateDocumentStatus(documentId, updateDocumentStatusDto.status);
+    const updated = await this.documentService.updateDocumentStatus(documentId, updateDocumentStatusDto);
     if (!updated) {
       throw new HttpException('Document not found', HttpStatus.NOT_FOUND);
     }

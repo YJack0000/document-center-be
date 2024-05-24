@@ -18,7 +18,7 @@ export class UpdateDocumentDto {
 
 export class UpdateDocumentStatusDto {
 	@ApiProperty()
-	status: 'edit' | 'pass';
+	status: 'edit' | 'pass' |'reject' | 'review';
 }
 
 export class PublicDocumentDto {

@@ -1,7 +1,6 @@
 import { Logger, Module } from '@nestjs/common';
 import { DocumentService } from './document.service';
 import { DocumentController } from '../controllers/document.controller';
-import { DocumentStatusController } from '../controllers/document.controller';
 import { DocumentRepository } from 'src/repositories/document.repository';
 import { IDocumentRepository } from './document.interface';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -17,6 +16,6 @@ import { Document } from './document.entity';
     },
     Logger,
   ],
-  controllers: [DocumentController, DocumentStatusController],
+  controllers: [DocumentController],
 })
 export class DocumentModule { }

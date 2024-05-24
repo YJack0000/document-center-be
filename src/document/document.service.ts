@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { IDocumentRepository } from './document.interface';
 import { Document } from './document.entity';
 import { CreateDocumentDto } from './dto/document.dto';
+import { UpdateDocumentStatusDto } from 'src/document/dto/document.dto';
 
 @Injectable()
 export class DocumentService {
@@ -61,18 +62,18 @@ export class DocumentService {
 
     return `Document deleted: ${documentId}`;
   }
-  async updateDocumentStatus(documentId: string, status: 'edit' | 'pass'): Promise<string> {
+  async updateDocumentStatus(documentId: string, updateDto: UpdateDocumentStatusDto): Promise<string> {
     this.logger.log(`Update Document Status for ID: ${documentId}`);
-
+    
     const document = await this.documentRepository.findOneById(documentId);
     if (!document) {
       return 'Document not found';
     }
 
-    document.status = status;
+    document.status = updateDto.status;
     await this.documentRepository.save(document);
 
-    return `Document status updated to ${status} for Document ID: ${documentId}`;
+    return `Document status updated to ${updateDto.status} for Document ID: ${documentId}`;
   }
 
   async getDocumentsByOwner(ownerId: string): Promise<any> {
