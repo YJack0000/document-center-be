@@ -10,7 +10,6 @@ on:
 
 jobs:
   scan:
-    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,6 +23,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
   test:
+    needs: scan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -44,7 +44,7 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
       - name: List the state of node modules
-        if: ${{ steps.cache-npm.outputs.cache-hit == 'false' }}
+        if: steps.cache-npm.outputs.cache-hit == 'false'
         continue-on-error: true
         run: npm list
       - run: npm ci --legacy-peer-deps
@@ -52,6 +52,7 @@ jobs:
       - run: npm test
         env:
           CI: true
+
   build:
     needs: test
     runs-on: ubuntu-latest
