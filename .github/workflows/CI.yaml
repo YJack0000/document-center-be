@@ -21,6 +21,11 @@ jobs:
         run: snyk test
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Save Snyk results
+        uses: actions/upload-artifact@v2
+        with:
+          name: snyk-results
+          path: snyk-report.json
 
   test:
     needs: scan
@@ -52,6 +57,11 @@ jobs:
       - run: npm test
         env:
           CI: true
+      - name: Save test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: testresults
+          path: testresults.xml
 
   build:
     needs: test
