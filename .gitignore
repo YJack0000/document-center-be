@@ -1,5 +1,5 @@
 # k8s ignore
-k8s/secrets.yaml
+k8s/secrets.yml
 
 # compiled output
 /dist

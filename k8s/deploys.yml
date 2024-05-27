@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: document-center-be
+  namespace: document-center
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: document-center-be
+  template:
+    metadata:
+      labels:
+        app: document-center-be
+    spec:
+      containers:
+      - name: document-center-be-container
+        image: yjack0000cs12/document-center-be:v0
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - secretRef:
+            name: document-center-be-secrets
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  namespace: document-center
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:latest
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - secretRef:
+            name: postgres-secrets
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio-deployment
+  namespace: document-center
+spec:
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      containers:
+      - name: minio
+        image: minio/minio
+        args: ["server", "/data"]
+        ports:
+        - containerPort: 9000
+        envFrom:
+        - secretRef:
+            name: minio-secrets
