@@ -46,7 +46,7 @@ spec:
         - secretRef:
             name: postgres-secrets
         env:
-          name: PGDATA
+        - name: PGDATA
           value: /var/lib/postgresql/data/pg # add this to resolve directory not empty error
         volumeMounts:
         - name: postgres-storage
