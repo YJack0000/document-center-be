@@ -44,8 +44,6 @@ data:
   init-db.sh: |
     #!/bin/bash
     set -e
-    # Set the correct permissions for the script
-    chmod +x "$0"
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
         CREATE DATABASE "$POSTGRES_DB";
     EOSQL
