@@ -18,7 +18,7 @@ import { CreateDocumentDto } from 'src/document/dto/document.dto';
 import { UserGuard } from 'src/guard/user.guard';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 
-@Controller('document')
+@Controller('documents')
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
 
@@ -41,10 +41,7 @@ export class DocumentController {
   }
 
   @Get('/:documentId')
-  async getDocumentById(
-    @Param('documentId') documentId: string,
-    @Res() res,
-  ) {
+  async getDocumentById(@Param('documentId') documentId: string, @Res() res) {
     const result = await this.documentService.getDocumentById(documentId);
     return res.status(HttpStatus.OK).json(result);
   }
@@ -56,7 +53,7 @@ export class DocumentController {
     @Param('documentId') documentId: string,
     @Body() body: CreateDocumentDto,
     @Res() res,
-  ){
+  ) {
     const result = await this.documentService.updateMyDocument(
       req.user,
       documentId,
@@ -71,7 +68,7 @@ export class DocumentController {
     @Req() req,
     @Param('documentId') documentId: string,
     @Res() res,
-  ){
+  ) {
     await this.documentService.deleteMyDocument(req.user, documentId);
     return res.status(HttpStatus.NO_CONTENT).send();
   }
@@ -79,7 +76,9 @@ export class DocumentController {
   @Get('/assigned/me')
   @UseGuards(JwtAuthGuard, UserGuard)
   async getDocumentsAssignedToMe(@Req() req, @Res() res) {
-    const result = await this.documentService.getDocumentsAssignedToMe(req.user);
+    const result = await this.documentService.getDocumentsAssignedToMe(
+      req.user,
+    );
     return res.status(HttpStatus.OK).json(result);
   }
 }

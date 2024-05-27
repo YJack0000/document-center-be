@@ -72,7 +72,7 @@ export class ReviewService {
     this.logger.log(`Get My Document Review`);
     await this.helper.checkOwnership(user, documentId);
     return await this.reviewRepository.findManyByCondition({
-      where: { documentId: documentId},
+      where: { documentId: documentId },
     });
   }
 }
