@@ -23,19 +23,6 @@ spec:
             name: document-center-be-secrets
 
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: init-db-configmap
-  namespace: document-center
-data:
-  init-db.sh: |
-    #!/bin/bash
-    set -e
-    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
-        CREATE DATABASE "$POSTGRES_DB";
-    EOSQL
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -58,14 +45,9 @@ spec:
         envFrom: 
         - secretRef:
             name: postgres-secrets
-        env:
-        - name: PGDATA
-          value: /var/lib/postgresql/data/pg # add this to resolve directory not empty error
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
-        - name: init-db
-          mountPath: /docker-entrypoint-initdb.d
       volumes:
       - name: postgres-storage
         persistentVolumeClaim:
