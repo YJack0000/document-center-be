@@ -6,14 +6,21 @@ import { IDocumentRepository } from './document.interface';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Document } from './document.entity';
 import { HelperModule } from 'src/helper/helper.module';
+import { Review } from 'src/review/review.entity';
+import { IReviewRepository } from 'src/review/review.interface';
+import { ReviewRepository } from 'src/repositories/review.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Document]), HelperModule],
+  imports: [TypeOrmModule.forFeature([Document, Review]), HelperModule],
   providers: [
     DocumentService,
     {
       provide: IDocumentRepository,
       useClass: DocumentRepository,
+    },
+    {
+      provide: IReviewRepository,
+      useClass: ReviewRepository,
     },
     Logger,
   ],

@@ -40,7 +40,7 @@ export class DocumentController {
     return res.status(HttpStatus.CREATED).json(result);
   }
 
-  @Get(':documentId')
+  @Get('/:documentId')
   async getDocumentById(
     @Param('documentId') documentId: string,
     @Res() res,
@@ -49,7 +49,7 @@ export class DocumentController {
     return res.status(HttpStatus.OK).json(result);
   }
 
-  @Put(':documentId')
+  @Put('/:documentId')
   @UseGuards(JwtAuthGuard, UserGuard)
   async updateDocument(
     @Req() req,
@@ -65,7 +65,7 @@ export class DocumentController {
     return res.status(HttpStatus.OK).json(result);
   }
 
-  @Delete(':documentId')
+  @Delete('/:documentId')
   @UseGuards(JwtAuthGuard, UserGuard)
   async deleteDocument(
     @Req() req,
@@ -74,5 +74,12 @@ export class DocumentController {
   ){
     await this.documentService.deleteMyDocument(req.user, documentId);
     return res.status(HttpStatus.NO_CONTENT).send();
+  }
+
+  @Get('/assigned/me')
+  @UseGuards(JwtAuthGuard, UserGuard)
+  async getDocumentsAssignedToMe(@Req() req, @Res() res) {
+    const result = await this.documentService.getDocumentsAssignedToMe(req.user);
+    return res.status(HttpStatus.OK).json(result);
   }
 }

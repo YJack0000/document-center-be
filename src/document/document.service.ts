@@ -10,12 +10,16 @@ import { Document } from './document.entity';
 import { CreateDocumentDto } from './dto/document.dto';
 import { User } from 'src/strategy/jwt.strategy';
 import { HelperService } from 'src/helper/helper.service';
+import { IReviewRepository } from 'src/review/review.interface';
+import { In } from 'typeorm';
 
 @Injectable()
 export class DocumentService {
   constructor(
     @Inject(IDocumentRepository)
     private readonly documentRepository: IDocumentRepository,
+    @Inject(IReviewRepository)
+    private readonly reviewRepository: IReviewRepository,
     private readonly logger: Logger,
     private readonly helper: HelperService,
   ) {
@@ -65,5 +69,18 @@ export class DocumentService {
     this.logger.log(`Delete Document`);
     await this.helper.checkOwnership(user, documentId);
     await this.documentRepository.removeById(documentId);
+  }
+
+  async getDocumentsAssignedToMe(user: User) {
+    this.logger.log(`Get Documents Assigned To Me`);
+    const myReviews = await this.reviewRepository.findManyByCondition({
+      where: { reviewerId: user.id },
+    });
+    // Get document ids set from reviews
+    const documentIds = myReviews.map((review) => review.documentId);
+    // Get documents from document ids
+    return await this.documentRepository.findManyByCondition({
+      where: { id: In(documentIds) },
+    });
   }
 }
