@@ -5,6 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { DocumentModule } from './document/document.module';
 import { Document } from './document/document.entity';
+import { AuthModule } from './auth/auth.module';
+import { Auth } from './auth/auth.entity';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -20,11 +23,16 @@ import { Document } from './document/document.entity';
           autoLoadEntities: true,
           synchronize: true,
           host: 'localhost',
-          entities: [Document],
+          entities: [Document, Auth],
         };
       },
     }),
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+    }),
     DocumentModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

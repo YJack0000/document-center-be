@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { DocumentService } from '../document/document.service';
 import { Document } from '../document/document.entity';
 import { CreateDocumentDto } from 'src/document/dto/document.dto';
@@ -7,12 +7,12 @@ import { CreateDocumentDto } from 'src/document/dto/document.dto';
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
 
-  @Get()
+  @Get("/me")
   async getDocuments(): Promise<Document[]> {
     return await this.documentService.getDocuments();
   }
 
-  @Post()
+  @Post("/me")
   async createDocument(@Body() body: CreateDocumentDto): Promise<string> {
     return await this.documentService.createDocument(body);
   }

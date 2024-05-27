@@ -20,9 +20,7 @@ export class DocumentRepository
 
   public create(data: DeepPartial<Document>): Document {
     data.status = 'edit';
-    if (!data.createAt){
-      data.createAt = new Date();
-    }
+    data.createAt = new Date();
     data.updateAt = new Date();
 
     return super.create(data);

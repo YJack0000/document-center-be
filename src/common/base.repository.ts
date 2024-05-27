@@ -65,4 +65,16 @@ export class BaseRepostitory<T extends HasId>
   public async findOne(options: FindOneOptions<T>): Promise<T> {
     return this.entity.findOne(options);
   }
+
+  public async upsert(data: DeepPartial<T>): Promise<T> {
+    const existingEntity = await this.entity.findOneBy({ id: data.id as any });
+    if (existingEntity) {
+      // Merge the new data with existing entity
+      const updatedEntity = this.entity.merge(existingEntity, data);
+      return await this.entity.save(updatedEntity);
+    } else {
+      // Create new entity if it does not exist
+      return await this.entity.save(data);
+    }
+  }
 }
