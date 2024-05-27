@@ -1,8 +1,15 @@
-import { ForbiddenException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { IDocumentRepository } from './document.interface';
 import { Document } from './document.entity';
 import { CreateDocumentDto } from './dto/document.dto';
 import { User } from 'src/strategy/jwt.strategy';
+import { HelperService } from 'src/helper/helper.service';
 
 @Injectable()
 export class DocumentService {
@@ -10,6 +17,7 @@ export class DocumentService {
     @Inject(IDocumentRepository)
     private readonly documentRepository: IDocumentRepository,
     private readonly logger: Logger,
+    private readonly helper: HelperService,
   ) {
     this.logger = new Logger(DocumentService.name);
   }
@@ -44,13 +52,7 @@ export class DocumentService {
     body: CreateDocumentDto,
   ): Promise<Document> {
     this.logger.log(`Update Document`);
-    // Check if the document exists and belongs to the user
-    const document = await this.documentRepository.findOneById(documentId);
-    if (!document || document.ownerId !== user.id) {
-      // Document not found or does not belong to the user
-      throw new ForbiddenException("Document not found or does not belong to you"); 
-    }
-
+    await this.helper.checkOwnership(user, documentId);
     const updatedDocument = {
       id: documentId,
       ...body,
@@ -61,11 +63,7 @@ export class DocumentService {
 
   async deleteMyDocument(user: User, documentId: string): Promise<void> {
     this.logger.log(`Delete Document`);
-    // Check if the document exists and belongs to the user
-    const document = await this.documentRepository.findOneById(documentId);
-    if (!document || document.ownerId !== user.id) {
-      throw new ForbiddenException("Document not found or does not belong to you");
-    }
+    await this.helper.checkOwnership(user, documentId);
     await this.documentRepository.removeById(documentId);
   }
 }

@@ -42,11 +42,15 @@ export class BaseRepostitory<T extends HasId>
     return await this.entity.findOneBy(options);
   }
 
-  public async findOneByCondition(filterCondition: FindOneOptions<T>): Promise<T> {
+  public async findOneByCondition(
+    filterCondition: FindOneOptions<T>,
+  ): Promise<T> {
     return await this.entity.findOne(filterCondition);
   }
 
-  public async findManyByCondition(filterCondition: FindManyOptions<T>): Promise<T[]> {
+  public async findManyByCondition(
+    filterCondition: FindManyOptions<T>,
+  ): Promise<T[]> {
     return await this.entity.find(filterCondition);
   }
 
@@ -63,7 +67,9 @@ export class BaseRepostitory<T extends HasId>
     return await this.entity.remove(entity);
   }
 
-  public async removeManyByCondition(filterCondition: FindOneOptions<T>): Promise<T[]> {
+  public async removeManyByCondition(
+    filterCondition: FindOneOptions<T>,
+  ): Promise<T[]> {
     const entity = await this.findManyByCondition(filterCondition);
     return await this.entity.remove(entity);
   }

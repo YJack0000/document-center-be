@@ -8,6 +8,9 @@ import { Document } from './document/document.entity';
 import { AuthModule } from './auth/auth.module';
 import { Auth } from './auth/auth.entity';
 import { JwtModule } from '@nestjs/jwt';
+import { ReviewModule } from './review/review.module';
+import { Review } from './review/review.entity';
+import { HelperModule } from './helper/helper.module';
 
 @Module({
   imports: [
@@ -23,7 +26,7 @@ import { JwtModule } from '@nestjs/jwt';
           autoLoadEntities: true,
           synchronize: true,
           host: 'localhost',
-          entities: [Document, Auth],
+          entities: [Document, Auth, Review],
         };
       },
     }),
@@ -33,6 +36,8 @@ import { JwtModule } from '@nestjs/jwt';
     }),
     DocumentModule,
     AuthModule,
+    ReviewModule,
+    HelperModule,
   ],
   controllers: [AppController],
   providers: [AppService],
