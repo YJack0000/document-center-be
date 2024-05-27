@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: document-center-be
-        image: yjack0000cs12/document-center-be:v26
+        image: yjack0000cs12/document-center-be:v25
         ports:
         - containerPort: 3000
         envFrom:
@@ -45,6 +45,9 @@ spec:
         envFrom: 
         - secretRef:
             name: postgres-secrets
+        env:
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata # add this to resolve directory not empty error
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
