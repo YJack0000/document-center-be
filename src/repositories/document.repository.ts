@@ -25,4 +25,16 @@ export class DocumentRepository
 
     return super.create(data);
   }
+
+  public async upsert(data: DeepPartial<Document>): Promise<Document> {
+    const existingEntity = await super.findOneById(data.id);
+    if (existingEntity) {
+      const updatedEntity = { ...existingEntity, ...data };
+      existingEntity.updateAt = new Date();
+      return await super.save(updatedEntity);
+    } else {
+      // Create new entity if it does not exist
+      return await super.save(data);
+    }
+  }
 }

@@ -23,8 +23,10 @@ export class AuthController {
   @UseGuards(GoogleOauthGuard)
   async googleAuthCallback(@Req() req, @Res() res: Response) {
     const token = await this.authService.signIn(req.user);
-    res.cookie('access_token', token, { httpOnly: true });
 
-    return res.status(HttpStatus.OK).json({ message: 'User authenticated' });
+    return res
+      .status(HttpStatus.OK)
+      .cookie('access_token', token)
+      .json({ message: 'User authenticated' });
   }
 }

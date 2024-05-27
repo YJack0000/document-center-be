@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { IDocumentRepository } from './document.interface';
 import { Document } from './document.entity';
 import { CreateDocumentDto } from './dto/document.dto';
+import { User } from 'src/strategy/jwt.strategy';
 
 @Injectable()
 export class DocumentService {
@@ -13,41 +14,58 @@ export class DocumentService {
     this.logger = new Logger(DocumentService.name);
   }
 
-  async getDocuments(): Promise<Document[]> {
-    this.logger.log(`Get Documents`);
-    return await this.documentRepository.findAll();
+  async getMyDocuments(user: User): Promise<Document[]> {
+    this.logger.log(`Get My Documents`);
+    return await this.documentRepository.findManyByCondition({
+      where: { ownerId: user.id },
+    });
   }
 
-  async createDocument(body: CreateDocumentDto): Promise<string> {
+  async createDocument(
+    user: User,
+    body: CreateDocumentDto,
+  ): Promise<string> {
     this.logger.log(`Create Document`);
-    const document = this.documentRepository.create(body);
+    const myDocument = {
+      ...body,
+      ownerId: user.id,
+    };
+    const document = this.documentRepository.create(myDocument);
     const result = await this.documentRepository.save(document);
 
     return `Document created: ${result.id}`;
   }
 
-  async updateDocument(documentId: string, body: CreateDocumentDto): Promise<string> {
+  async getDocumentById(documentId: string): Promise<Document> {
+    this.logger.log(`Get Document By Id`);
+    return await this.documentRepository.findOneById(documentId);
+  }
+
+  async updateMyDocument(
+    user: User,
+    documentId: string,
+    body: CreateDocumentDto,
+  ): Promise<string> {
     this.logger.log(`Update Document`);
+    // Check if the document exists and belongs to the user
     const document = await this.documentRepository.findOneById(documentId);
-    if (!document) {
-      return 'Document not found';
+    if (!document || document.ownerId !== user.id) {
+      return 'Document not found or does not belong to you';
     }
 
-    const updatedDocument = this.documentRepository.create(body);
-    updatedDocument.id = documentId;
-    await this.documentRepository.save(updatedDocument);
+    const updatedDocument = {
+      id: documentId,
+      ...body,
+    };
+
+    await this.documentRepository.upsert(updatedDocument);
 
     return `Document updated: ${documentId}`;
   }
 
   async deleteDocument(documentId: string): Promise<string> {
     this.logger.log(`Delete Document`);
-    const document = await this.documentRepository.findOneById(documentId);
-    if (!document) {
-      return 'Document not found';
-    }
-
-    await this.documentRepository.remove(document);
+    await this.documentRepository.removeById(documentId);
 
     return `Document deleted: ${documentId}`;
   }

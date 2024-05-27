@@ -42,8 +42,12 @@ export class BaseRepostitory<T extends HasId>
     return await this.entity.findOneBy(options);
   }
 
-  public async findByCondition(filterCondition: FindOneOptions<T>): Promise<T> {
+  public async findOneByCondition(filterCondition: FindOneOptions<T>): Promise<T> {
     return await this.entity.findOne(filterCondition);
+  }
+
+  public async findManyByCondition(filterCondition: FindManyOptions<T>): Promise<T[]> {
+    return await this.entity.find(filterCondition);
   }
 
   public async findWithRelations(relations: FindManyOptions<T>): Promise<T[]> {
@@ -54,8 +58,14 @@ export class BaseRepostitory<T extends HasId>
     return await this.entity.find(options);
   }
 
-  public async remove(data: T): Promise<T> {
-    return await this.entity.remove(data);
+  public async removeById(id: string): Promise<T> {
+    const entity = await this.findOneById(id);
+    return await this.entity.remove(entity);
+  }
+
+  public async removeManyByCondition(filterCondition: FindOneOptions<T>): Promise<T[]> {
+    const entity = await this.findManyByCondition(filterCondition);
+    return await this.entity.remove(entity);
   }
 
   public async preload(entityLike: DeepPartial<T>): Promise<T> {
@@ -70,7 +80,7 @@ export class BaseRepostitory<T extends HasId>
     const existingEntity = await this.entity.findOneBy({ id: data.id as any });
     if (existingEntity) {
       // Merge the new data with existing entity
-      const updatedEntity = this.entity.merge(existingEntity, data);
+      const updatedEntity = { ...existingEntity, ...data };
       return await this.entity.save(updatedEntity);
     } else {
       // Create new entity if it does not exist

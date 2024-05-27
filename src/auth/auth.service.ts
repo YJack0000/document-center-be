@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IAuthRepository } from './auth.interface';
+import { JwtPayload } from 'src/strategy/jwt.strategy';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +15,7 @@ export class AuthService {
     @Inject(IAuthRepository) private authRepository: IAuthRepository,
   ) {}
 
-  generateJwt(payload) {
+  generateJwt(payload: JwtPayload) {
     return this.jwtService.sign(payload);
   }
 
@@ -31,6 +32,7 @@ export class AuthService {
     return this.generateJwt({
       sub: userExists.id,
       email: userExists.email,
+      name: userExists.name,
     });
   }
 
@@ -43,6 +45,7 @@ export class AuthService {
       return this.generateJwt({
         sub: newUser.id,
         email: newUser.email,
+        name: newUser.name,
       });
     } catch (e) {
       throw new InternalServerErrorException();
