@@ -11,3 +11,31 @@ spec:
   selector:
     app: document-center-be
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: document-center
+spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+  selector:
+    app: postgres
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-service
+  namespace: document-center
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9000
+      targetPort: 9000
+      protocol: TCP
+  selector:
+    app: minio
+
