@@ -3,11 +3,13 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Post,
   Put,
   Query,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { DocumentService } from '../document/document.service';
@@ -22,8 +24,9 @@ export class DocumentController {
 
   @Get('/me')
   @UseGuards(JwtAuthGuard, UserGuard)
-  async getDocuments(@Req() req): Promise<Document[]> {
-    return await this.documentService.getMyDocuments(req.user);
+  async getDocuments(@Req() req, @Res() res) {
+    const result = await this.documentService.getMyDocuments(req.user);
+    return res.status(HttpStatus.OK).json(result);
   }
 
   @Post('/me')
@@ -31,15 +34,19 @@ export class DocumentController {
   async createDocument(
     @Req() req,
     @Body() body: CreateDocumentDto,
-  ): Promise<string> {
-    return await this.documentService.createDocument(req.user, body);
+    @Res() res,
+  ) {
+    const result = await this.documentService.createDocument(req.user, body);
+    return res.status(HttpStatus.CREATED).json(result);
   }
 
   @Get(':documentId')
   async getDocumentById(
     @Param('documentId') documentId: string,
-  ): Promise<Document> {
-    return await this.documentService.getDocumentById(documentId);
+    @Res() res,
+  ) {
+    const result = await this.documentService.getDocumentById(documentId);
+    return res.status(HttpStatus.OK).json(result);
   }
 
   @Put(':documentId')
@@ -48,18 +55,24 @@ export class DocumentController {
     @Req() req,
     @Param('documentId') documentId: string,
     @Body() body: CreateDocumentDto,
-  ): Promise<string> {
-    return await this.documentService.updateMyDocument(
+    @Res() res,
+  ){
+    const result = await this.documentService.updateMyDocument(
       req.user,
       documentId,
       body,
     );
+    return res.status(HttpStatus.OK).json(result);
   }
 
   @Delete(':documentId')
+  @UseGuards(JwtAuthGuard, UserGuard)
   async deleteDocument(
+    @Req() req,
     @Param('documentId') documentId: string,
-  ): Promise<string> {
-    return await this.documentService.deleteDocument(documentId);
+    @Res() res,
+  ){
+    await this.documentService.deleteMyDocument(req.user, documentId);
+    return res.status(HttpStatus.NO_CONTENT).send();
   }
 }

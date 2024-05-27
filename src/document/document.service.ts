@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { IDocumentRepository } from './document.interface';
 import { Document } from './document.entity';
 import { CreateDocumentDto } from './dto/document.dto';
@@ -14,17 +14,14 @@ export class DocumentService {
     this.logger = new Logger(DocumentService.name);
   }
 
-  async getMyDocuments(user: User): Promise<Document[]> {
+  async getMyDocuments(user: User) {
     this.logger.log(`Get My Documents`);
     return await this.documentRepository.findManyByCondition({
       where: { ownerId: user.id },
     });
   }
 
-  async createDocument(
-    user: User,
-    body: CreateDocumentDto,
-  ): Promise<string> {
+  async createDocument(user: User, body: CreateDocumentDto): Promise<Document> {
     this.logger.log(`Create Document`);
     const myDocument = {
       ...body,
@@ -33,7 +30,7 @@ export class DocumentService {
     const document = this.documentRepository.create(myDocument);
     const result = await this.documentRepository.save(document);
 
-    return `Document created: ${result.id}`;
+    return result;
   }
 
   async getDocumentById(documentId: string): Promise<Document> {
@@ -45,12 +42,13 @@ export class DocumentService {
     user: User,
     documentId: string,
     body: CreateDocumentDto,
-  ): Promise<string> {
+  ): Promise<Document> {
     this.logger.log(`Update Document`);
     // Check if the document exists and belongs to the user
     const document = await this.documentRepository.findOneById(documentId);
     if (!document || document.ownerId !== user.id) {
-      return 'Document not found or does not belong to you';
+      // Document not found or does not belong to the user
+      throw new ForbiddenException("Document not found or does not belong to you"); 
     }
 
     const updatedDocument = {
@@ -58,15 +56,16 @@ export class DocumentService {
       ...body,
     };
 
-    await this.documentRepository.upsert(updatedDocument);
-
-    return `Document updated: ${documentId}`;
+    return await this.documentRepository.upsert(updatedDocument);
   }
 
-  async deleteDocument(documentId: string): Promise<string> {
+  async deleteMyDocument(user: User, documentId: string): Promise<void> {
     this.logger.log(`Delete Document`);
+    // Check if the document exists and belongs to the user
+    const document = await this.documentRepository.findOneById(documentId);
+    if (!document || document.ownerId !== user.id) {
+      throw new ForbiddenException("Document not found or does not belong to you");
+    }
     await this.documentRepository.removeById(documentId);
-
-    return `Document deleted: ${documentId}`;
   }
 }
