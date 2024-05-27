@@ -23,6 +23,20 @@ spec:
             name: document-center-be-secrets
 
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-db-configmap
+  namespace: document-center
+data:
+  init-db.sh: |
+    #!/bin/bash
+    set -e
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+        CREATE DATABASE "$POSTGRES_DB";
+    EOSQL
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -51,6 +65,10 @@ spec:
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
+        - name: init-db
+          mountPath: /docker-entrypoint-initdb.d
+          subPath: init-db.sh
+          readOnly: true
       volumes:
       - name: postgres-storage
         persistentVolumeClaim:
