@@ -12,6 +12,9 @@ RUN npm run build
 
 FROM node:20.13.0-alpine AS production
 
+RUN apk add --no-cache tzdata
+ENV TZ="Asia/Taipei"
+
 WORKDIR /app
 
 COPY --from=build /app/dist ./dist
@@ -21,4 +24,3 @@ COPY --from=build /app/package*.json ./
 EXPOSE 3000 
 
 CMD ["node", "dist/main"]
-
