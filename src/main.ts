@@ -23,7 +23,7 @@ async function bootstrap() {
     swaggerOptions: {
       persistAuthorization: true,
     },
-    ignoreGlobalPrefix: false,
+    useGlobalPrefix: true,
   });
 
   await app.listen(3000);
