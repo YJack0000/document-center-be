@@ -2,10 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class PaginationReqDto {
   @ApiProperty({ default: 1 })
-  page: number;
+  page: number = 1;
 
   @ApiProperty({ default: 10 })
-  limit: number;
+  limit: number = 10;
 }
 
 export class PaginationResDto<T> {
