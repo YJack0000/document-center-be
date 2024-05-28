@@ -14,6 +14,8 @@ import { HelperModule } from './helper/helper.module';
 import { UsersModule } from './users/users.module';
 import { PublicDocumentModule } from './public-document/public-document.module';
 import { PublicDocument } from './public-document/public-document.entity';
+import { CommentModule } from './comment/comment.module';
+import { Comment } from './comment/comment.entity';
 
 @Module({
   imports: [
@@ -29,7 +31,7 @@ import { PublicDocument } from './public-document/public-document.entity';
           autoLoadEntities: true,
           synchronize: true,
           host: 'localhost',
-          entities: [Document, User, Review, PublicDocument],
+          entities: [Document, User, Review, PublicDocument, Comment],
         };
       },
     }),
@@ -43,6 +45,7 @@ import { PublicDocument } from './public-document/public-document.entity';
     HelperModule,
     UsersModule,
     PublicDocumentModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
