@@ -7,6 +7,7 @@ import { User } from 'src/users/user.entity';
 import { IUserRepository } from 'src/users/user.interface';
 import { UserRepository } from 'src/repositories/user.repository';
 import { GithubStrategy } from 'src/strategy/github.strategy';
+import { GoogleStrategy } from 'src/strategy/google.strategy';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
@@ -17,6 +18,7 @@ import { GithubStrategy } from 'src/strategy/github.strategy';
       useClass: UserRepository,
     },
     GithubStrategy,
+    GoogleStrategy,
     JwtStrategy,
     Logger,
   ],
