@@ -13,6 +13,7 @@ import { Review } from './review/review.entity';
 import { HelperModule } from './helper/helper.module';
 import { UsersModule } from './users/users.module';
 import { PublicDocumentModule } from './public-document/public-document.module';
+import { PublicDocument } from './public-document/public-document.entity';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { PublicDocumentModule } from './public-document/public-document.module';
           autoLoadEntities: true,
           synchronize: true,
           host: 'localhost',
-          entities: [Document, User, Review],
+          entities: [Document, User, Review, PublicDocument],
         };
       },
     }),
