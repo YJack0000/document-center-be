@@ -26,12 +26,13 @@ export class UploadImageController {
 
   @Get('/:fileName')
   async getImageUrl(@Param('fileName') fileName: string, @Res() res) {
-    const result = await this.uploadImageService.getImageUrl(fileName);
-    return res.status(HttpStatus.OK).json(result);
+    const url = await this.uploadImageService.getImageUrl(fileName);
+    return res.status(HttpStatus.OK).json({ url });
   }
 
   @Delete('/:fileName')
-  async deleteImage(@Param('fileName') fileName: string) {
-    return await this.uploadImageService.deleteImage(fileName);
+  async deleteImage(@Param('fileName') fileName: string, @Res() res) {
+    await this.uploadImageService.deleteImage(fileName);
+    return res.status(HttpStatus.NO_CONTENT).send();
   }
 }
