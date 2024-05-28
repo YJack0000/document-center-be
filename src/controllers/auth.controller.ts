@@ -20,7 +20,7 @@ export class AuthController {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   async auth() {}
 
-  @Post('github/callback')
+  @Get('github/callback')
   @UseGuards(GithubOauthGuard)
   async githubAuthCallback(@Req() req, @Res() res: Response) {
     const token = await this.authService.signIn(req.user);
