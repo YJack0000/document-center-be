@@ -20,8 +20,8 @@ export class UploadImageController {
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(@UploadedFile() file: Express.Multer.File, @Res() res) {
-    const filename = await this.uploadImageService.uploadImage(file);
-    return res.status(HttpStatus.OK).json({ filename });
+    const fileName = await this.uploadImageService.uploadImage(file);
+    return res.status(HttpStatus.OK).json({ fileName });
   }
 
   @Get('/:fileName')
