@@ -32,6 +32,9 @@ export class ReviewService {
   ) {
     this.logger.log(`Assign Reviewer`);
     await this.helper.checkOwnership(user, documentId);
+    if (user.id === body.reviewerId) {
+      throw new ForbiddenException('You cannot assign yourself as a reviewer');
+    }
     // Get reviewer name
     const reviewer = await this.authRepository.findOne({
       where: { id: body.reviewerId },
