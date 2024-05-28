@@ -1,11 +1,13 @@
 import {
+  BadRequestException,
+  ForbiddenException,
   Inject,
   Injectable,
   Logger,
 } from '@nestjs/common';
 import { IDocumentRepository } from './document.interface';
 import { Document } from './document.entity';
-import { CreateDocumentDto } from './dto/document.dto';
+import { CreateDocumentDto, UpdateStatusDto } from './dto/document.dto';
 import { HelperService } from 'src/helper/helper.service';
 import { IReviewRepository } from 'src/review/review.interface';
 import { In } from 'typeorm';
@@ -31,7 +33,10 @@ export class DocumentService {
     });
   }
 
-  async createDocument(user: UserReq, body: CreateDocumentDto): Promise<Document> {
+  async createDocument(
+    user: UserReq,
+    body: CreateDocumentDto,
+  ): Promise<Document> {
     this.logger.log(`Create Document`);
     const myDocument = {
       ...body,
@@ -67,6 +72,37 @@ export class DocumentService {
     this.logger.log(`Delete Document`);
     await this.helper.checkOwnership(user, documentId);
     await this.documentRepository.removeById(documentId);
+  }
+
+  async changeDocumentStatus(
+    user: UserReq,
+    documentId: string,
+    body: UpdateStatusDto,
+  ): Promise<Document> {
+    this.logger.log(`Change Document Status`);
+    const { status } = body;
+    const role = await this.helper.checkIsReviewerOrOwner(user, documentId);
+    let statusList = [];
+    if (role === 'owner') {
+      statusList = ['edit', 'review'];
+      if (!statusList.includes(status)) {
+        throw new BadRequestException(
+          'Owner can only change status to edit or review',
+        );
+      }
+    } else if (role === 'reviewer') {
+      statusList = ['pass', 'reject'];
+      if (!statusList.includes(status)) {
+        throw new BadRequestException(
+          'Reviewer can only change status to pass or reject',
+        );
+      }
+    } else {
+      throw new ForbiddenException('You are not the owner or reviewer');
+    }
+    const document = await this.documentRepository.findOneById(documentId);
+    document.status = status;
+    return await this.documentRepository.upsert(document);
   }
 
   async getDocumentsAssignedToMe(user: UserReq) {

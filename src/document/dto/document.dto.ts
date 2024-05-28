@@ -13,3 +13,8 @@ export class UpdateDocumentDto {
   @ApiProperty()
   content: string;
 }
+
+export class UpdateStatusDto {
+  @ApiProperty({ enum: ['edit', 'review', 'reject', 'pass'] })
+  status: string;
+}

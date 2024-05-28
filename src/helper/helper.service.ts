@@ -1,5 +1,11 @@
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { IDocumentRepository } from 'src/document/document.interface';
+import { IReviewRepository } from 'src/review/review.interface';
 import { UserReq } from 'src/strategy/jwt.strategy';
 
 @Injectable()
@@ -7,6 +13,8 @@ export class HelperService {
   constructor(
     @Inject(IDocumentRepository)
     private readonly documentRepository: IDocumentRepository,
+    @Inject(IReviewRepository)
+    private readonly reviewRepository: IReviewRepository,
   ) {}
 
   async checkOwnership(user: UserReq, documentId: string) {
@@ -18,5 +26,21 @@ export class HelperService {
         'Document not found or does not belong to you',
       );
     }
+  }
+
+  async checkIsReviewerOrOwner(
+    user: UserReq,
+    documentId: string,
+  ): Promise<string> {
+    // Check if the user is the reviewer or the owner of the document
+    const review = await this.reviewRepository.findOne({
+      where: { documentId: documentId, reviewerId: user.id },
+    });
+    if (!review) {
+      // User is not the reviewer
+      await this.checkOwnership(user, documentId);
+      return 'owner';
+    }
+    return 'reviewer';
   }
 }

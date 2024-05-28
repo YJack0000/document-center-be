@@ -14,7 +14,10 @@ import {
 } from '@nestjs/common';
 import { DocumentService } from '../document/document.service';
 import { Document } from '../document/document.entity';
-import { CreateDocumentDto } from 'src/document/dto/document.dto';
+import {
+  CreateDocumentDto,
+  UpdateStatusDto,
+} from 'src/document/dto/document.dto';
 import { UserGuard } from 'src/guard/user.guard';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 
@@ -71,6 +74,22 @@ export class DocumentController {
   ) {
     await this.documentService.deleteMyDocument(req.user, documentId);
     return res.status(HttpStatus.NO_CONTENT).send();
+  }
+
+  @Put('/status/:documentId')
+  @UseGuards(JwtAuthGuard, UserGuard)
+  async changeDocumentStatus(
+    @Req() req,
+    @Param('documentId') documentId: string,
+    @Body() body: UpdateStatusDto,
+    @Res() res,
+  ) {
+    const result = await this.documentService.changeDocumentStatus(
+      req.user,
+      documentId,
+      body,
+    );
+    return res.status(HttpStatus.OK).json(result);
   }
 
   @Get('/assigned/me')
