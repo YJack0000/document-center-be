@@ -12,6 +12,7 @@ import { HelperService } from 'src/helper/helper.service';
 import { IReviewRepository } from 'src/review/review.interface';
 import { In } from 'typeorm';
 import { UserReq } from 'src/strategy/jwt.strategy';
+import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
 
 @Injectable()
 export class DocumentService {
@@ -26,9 +27,11 @@ export class DocumentService {
     this.logger = new Logger(DocumentService.name);
   }
 
-  async getMyDocuments(user: UserReq) {
+  async getMyDocuments(
+    user: UserReq,
+  ){
     this.logger.log(`Get My Documents`);
-    return await this.documentRepository.findManyByCondition({
+    const data = await this.documentRepository.findManyByCondition({
       where: { ownerId: user.id },
     });
   }

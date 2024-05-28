@@ -20,6 +20,7 @@ import {
 } from 'src/document/dto/document.dto';
 import { UserGuard } from 'src/guard/user.guard';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
+import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
 
 @Controller('documents')
 export class DocumentController {
@@ -27,7 +28,7 @@ export class DocumentController {
 
   @Get('/me')
   @UseGuards(JwtAuthGuard, UserGuard)
-  async getDocuments(@Req() req, @Res() res) {
+  async getDocuments(@Req() req, @Query() query: PaginationReqDto, @Res() res){
     const result = await this.documentService.getMyDocuments(req.user);
     return res.status(HttpStatus.OK).json(result);
   }
