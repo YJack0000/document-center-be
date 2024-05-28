@@ -22,9 +22,8 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
-      ignoreGlobalPrefix: false,
     },
-  
+    ignoreGlobalPrefix: false,
   });
 
   await app.listen(3000);
