@@ -4,6 +4,7 @@ metadata:
   name: document-center-be
   namespace: document-center
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   selector:
     matchLabels:
@@ -55,6 +56,7 @@ metadata:
   name: postgres-deployment
   namespace: document-center
 spec:
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: postgres
@@ -97,6 +99,7 @@ metadata:
   name: minio-deployment
   namespace: document-center
 spec:
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: minio
