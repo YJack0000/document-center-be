@@ -25,11 +25,12 @@ export class AuthController {
   @UseGuards(GithubOauthGuard)
   async githubAuthCallback(@Req() req, @Res() res: Response) {
     const token = await this.authService.signIn(req.user);
+    const baseUrl = process.env.BASE_URL.replace('/api', '');
 
     return res
       .status(HttpStatus.OK)
       .cookie('access_token', token)
-      .json({ message: 'User authenticated' });
+      .redirect(baseUrl);
   }
 
   @Get('google')
@@ -41,10 +42,11 @@ export class AuthController {
   @UseGuards(GoogleOauthGuard)
   async googleAuthCallback(@Req() req, @Res() res: Response) {
     const token = await this.authService.signIn(req.user);
+    const baseUrl = process.env.BASE_URL.replace('/api', '');
 
     return res
       .status(HttpStatus.OK)
       .cookie('access_token', token)
-      .json({ message: 'User authenticated' });
+      .redirect(baseUrl);
   }
 }
