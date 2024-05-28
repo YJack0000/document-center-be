@@ -12,6 +12,7 @@ import { ReviewModule } from './review/review.module';
 import { Review } from './review/review.entity';
 import { HelperModule } from './helper/helper.module';
 import { UsersModule } from './users/users.module';
+import { PublicDocumentModule } from './public-document/public-document.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { UsersModule } from './users/users.module';
     ReviewModule,
     HelperModule,
     UsersModule,
+    PublicDocumentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
