@@ -24,13 +24,13 @@ spec:
             name: document-center-be-secrets
         livenessProbe:
           httpGet:
-            path: /
+            path: /api
             port: 3000
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
-            path: /
+            path: /api
             port: 3000
           initialDelaySeconds: 30
           periodSeconds: 10
