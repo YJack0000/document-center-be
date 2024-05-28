@@ -4,6 +4,7 @@ import { CreateCommentDto, GetCommentDto } from './dto/comment.dto';
 import { UserReq } from 'src/strategy/jwt.strategy';
 import { Comment } from './comment.entity';
 import { DeepPartial } from 'typeorm';
+import { PaginationResDto } from 'src/common/pagination.dto';
 
 @Injectable()
 export class CommentService {
@@ -13,12 +14,26 @@ export class CommentService {
     private readonly logger: Logger,
   ) {}
 
-  async getAllComments(query: GetCommentDto) {
+  async getAllComments(
+    query: GetCommentDto,
+  ): Promise<PaginationResDto<Comment>> {
     this.logger.log(`Create Comment`);
-    const { documentId } = query;
-    return await this.commentRepository.findManyByCondition({
+    const { documentId, page, limit } = query;
+    const totalAmount = await this.commentRepository.count({
       where: { documentId },
     });
+    const data = await this.commentRepository.findAll({
+      where: { documentId },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      data,
+      page: Number(page),
+      limit: Number(limit),
+      total: Math.ceil(totalAmount / limit),
+    };
   }
 
   async createComment(user: UserReq, body: CreateCommentDto) {
@@ -33,7 +48,7 @@ export class CommentService {
       username: name,
     };
 
-		const newComment = this.commentRepository.create(comment);
-		return await this.commentRepository.save(newComment);
+    const newComment = this.commentRepository.create(comment);
+    return await this.commentRepository.save(newComment);
   }
 }

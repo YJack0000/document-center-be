@@ -29,11 +29,25 @@ export class DocumentService {
 
   async getMyDocuments(
     user: UserReq,
-  ){
+    query: PaginationReqDto,
+  ): Promise<PaginationResDto<Document>> {
     this.logger.log(`Get My Documents`);
-    const data = await this.documentRepository.findManyByCondition({
+    const { page, limit } = query;
+    const totalAmount = await this.documentRepository.count({
       where: { ownerId: user.id },
     });
+    const data = await this.documentRepository.findAll({
+      where: { ownerId: user.id },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      data,
+      page: Number(page),
+      limit: Number(limit),
+      total: Math.ceil(totalAmount / limit),
+    };
   }
 
   async createDocument(
@@ -108,16 +122,32 @@ export class DocumentService {
     return await this.documentRepository.upsert(document);
   }
 
-  async getDocumentsAssignedToMe(user: UserReq) {
+  async getDocumentsAssignedToMe(
+    user: UserReq,
+    query: PaginationReqDto,
+  ): Promise<PaginationResDto<Document>> {
     this.logger.log(`Get Documents Assigned To Me`);
-    const myReviews = await this.reviewRepository.findManyByCondition({
+    const { page, limit } = query;
+    const myReviews = await this.reviewRepository.findAll({
       where: { reviewerId: user.id },
     });
     // Get document ids set from reviews
     const documentIds = myReviews.map((review) => review.documentId);
     // Get documents from document ids
-    return await this.documentRepository.findManyByCondition({
+    const totalAmount = await this.documentRepository.count({
       where: { id: In(documentIds) },
     });
+    const data = await this.documentRepository.findAll({
+      where: { id: In(documentIds) },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      data,
+      page: Number(page),
+      limit: Number(limit),
+      total: Math.ceil(totalAmount / limit),
+    };
   }
 }

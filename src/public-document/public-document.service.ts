@@ -5,6 +5,7 @@ import { HelperService } from 'src/helper/helper.service';
 import { PublicDocument } from './public-document.entity';
 import { UpdatePublicDocumentStatusDto } from './dto/public-document.dto';
 import { UserReq } from 'src/strategy/jwt.strategy';
+import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
 
 @Injectable()
 export class PublicDocumentService {
@@ -32,14 +33,44 @@ export class PublicDocumentService {
     return await this.publishDocument(documentId);
   }
 
-  async getAllPublicDocuments(): Promise<PublicDocument[]> {
-    return await this.publicDocumentRepository.findAll();
+  async getAllPublicDocuments(
+    query: PaginationReqDto,
+  ): Promise<PaginationResDto<PublicDocument>> {
+    const { page, limit } = query;
+    const totalAmount = await this.publicDocumentRepository.count();
+    const data = await this.publicDocumentRepository.findAll({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      data,
+      page: Number(page),
+      limit: Number(limit),
+      total: Math.ceil(totalAmount / limit),
+    };
   }
 
-  async getPublicDocumentsByUserId(userId: string): Promise<PublicDocument[]> {
-    return await this.publicDocumentRepository.findManyByCondition({
+  async getPublicDocumentsByUserId(
+    userId: string,
+    query: PaginationReqDto,
+  ): Promise<PaginationResDto<PublicDocument>> {
+    const { page, limit } = query;
+    const totalAmount = await this.publicDocumentRepository.count({
       where: { ownerId: userId },
     });
+    const data = await this.publicDocumentRepository.findAll({
+      where: { ownerId: userId },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      data,
+      page: Number(page),
+      limit: Number(limit),
+      total: Math.ceil(totalAmount / limit),
+    };
   }
 
   private async publishDocument(documentId: string): Promise<PublicDocument> {

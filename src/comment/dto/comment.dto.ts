@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationReqDto } from 'src/common/pagination.dto';
 
 export class CreateCommentDto {
   @ApiProperty()
@@ -7,7 +8,7 @@ export class CreateCommentDto {
   content: string;
 }
 
-export class GetCommentDto {
+export class GetCommentDto extends PaginationReqDto {
 	@ApiProperty()
 	documentId: string;
 }

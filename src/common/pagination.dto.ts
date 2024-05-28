@@ -5,7 +5,7 @@ export class PaginationReqDto {
   page: number;
 
   @ApiProperty({ default: 10 })
-  limit = 10;
+  limit: number;
 }
 
 export class PaginationResDto<T> {

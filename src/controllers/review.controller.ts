@@ -5,14 +5,18 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { PaginationReqDto } from 'src/common/pagination.dto';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 import { UserGuard } from 'src/guard/user.guard';
 import { AssignReviewerDto, CreateReviewDto } from 'src/review/dto/review.dto';
 import { ReviewService } from 'src/review/review.service';
+import { PaginationResDto } from '../common/pagination.dto';
+import { Review } from 'src/review/review.entity';
 
 @Controller('reviews')
 export class ReviewController {
@@ -55,10 +59,12 @@ export class ReviewController {
   async getReviewByDocumentId(
     @Req() req,
     @Param('documentId') documentId: string,
+    @Query() query: PaginationReqDto,
     @Res() res,
-  ) {
+  ): Promise<PaginationResDto<Review>> {
     const result = await this.reviewService.getMyDocumentReviews(
       req.user,
+      query,
       documentId,
     );
     return res.status(HttpStatus.OK).json(result);

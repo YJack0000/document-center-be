@@ -48,18 +48,16 @@ export class BaseRepostitory<T extends HasId>
     return await this.entity.findOne(filterCondition);
   }
 
-  public async findManyByCondition(
-    filterCondition: FindManyOptions<T>,
-  ): Promise<T[]> {
-    return await this.entity.find(filterCondition);
-  }
-
   public async findWithRelations(relations: FindManyOptions<T>): Promise<T[]> {
     return await this.entity.find(relations);
   }
 
-  public async findAll(): Promise<T[]> {
-    return await this.entity.find();
+  public async findAll(options?: FindManyOptions<T>): Promise<T[]> {
+    return await this.entity.find(options);
+  }
+
+  public async count(options?: FindManyOptions<T>): Promise<number> {
+    return await this.entity.count(options);
   }
 
   public async removeById(id: string): Promise<T> {
@@ -70,7 +68,7 @@ export class BaseRepostitory<T extends HasId>
   public async removeManyByCondition(
     filterCondition: FindOneOptions<T>,
   ): Promise<T[]> {
-    const entity = await this.findManyByCondition(filterCondition);
+    const entity = await this.findAll(filterCondition);
     return await this.entity.remove(entity);
   }
 

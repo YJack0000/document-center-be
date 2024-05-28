@@ -12,6 +12,7 @@ import { Review } from './review.entity';
 import { HelperService } from 'src/helper/helper.service';
 import { IUserRepository } from 'src/users/user.interface';
 import { UserReq } from 'src/strategy/jwt.strategy';
+import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
 
 @Injectable()
 export class ReviewService {
@@ -71,11 +72,28 @@ export class ReviewService {
     return await this.reviewRepository.upsert(reviewData);
   }
 
-  async getMyDocumentReviews(user: UserReq, documentId: string) {
+  async getMyDocumentReviews(
+    user: UserReq,
+    query: PaginationReqDto,
+    documentId: string,
+  ): Promise<PaginationResDto<Review>> {
     this.logger.log(`Get My Document Review`);
     await this.helper.checkOwnership(user, documentId);
-    return await this.reviewRepository.findManyByCondition({
+    const { page, limit } = query;
+    const totalAmount = await this.reviewRepository.count({
       where: { documentId: documentId },
     });
+    const data = await this.reviewRepository.findAll({
+      where: { documentId: documentId },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      data,
+      page: Number(page),
+      limit: Number(limit),
+      total: Math.ceil(totalAmount / limit),
+    };
   }
 }

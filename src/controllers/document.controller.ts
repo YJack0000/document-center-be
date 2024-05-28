@@ -28,8 +28,12 @@ export class DocumentController {
 
   @Get('/me')
   @UseGuards(JwtAuthGuard, UserGuard)
-  async getDocuments(@Req() req, @Query() query: PaginationReqDto, @Res() res){
-    const result = await this.documentService.getMyDocuments(req.user);
+  async getDocuments(
+    @Req() req,
+    @Query() query: PaginationReqDto,
+    @Res() res,
+  ): Promise<PaginationResDto<Document>> {
+    const result = await this.documentService.getMyDocuments(req.user, query);
     return res.status(HttpStatus.OK).json(result);
   }
 
@@ -95,9 +99,14 @@ export class DocumentController {
 
   @Get('/assigned/me')
   @UseGuards(JwtAuthGuard, UserGuard)
-  async getDocumentsAssignedToMe(@Req() req, @Res() res) {
+  async getDocumentsAssignedToMe(
+    @Req() req,
+    @Query() query: PaginationReqDto,
+    @Res() res,
+  ): Promise<PaginationResDto<Document>>{
     const result = await this.documentService.getDocumentsAssignedToMe(
       req.user,
+      query
     );
     return res.status(HttpStatus.OK).json(result);
   }

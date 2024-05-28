@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { CommentService } from 'src/comment/comment.service';
 import { CreateCommentDto, GetCommentDto } from 'src/comment/dto/comment.dto';
+import { PaginationResDto } from 'src/common/pagination.dto';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 import { UserGuard } from 'src/guard/user.guard';
 
@@ -19,7 +20,10 @@ export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Get()
-  async getAllComments(@Query() query: GetCommentDto, @Res() res) {
+  async getAllComments(
+    @Query() query: GetCommentDto,
+    @Res() res,
+  ): Promise<PaginationResDto<Comment>> {
     const result = await this.commentService.getAllComments(query);
     return res.status(HttpStatus.OK).json(result);
   }
