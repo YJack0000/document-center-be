@@ -7,6 +7,7 @@ export type JwtPayload = {
   sub: string;
   email: string;
   name: string;
+  exp: number;
 };
 
 export type UserReq = {
@@ -44,6 +45,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: JwtPayload) {
+    // Check if jwt token expired
+    if (Date.now() >= payload.exp * 1000) {
+      throw new UnauthorizedException('Please log in to continue');
+    }
     const user = await this.authRepository.findOne({
       where: { id: payload.sub },
     });
