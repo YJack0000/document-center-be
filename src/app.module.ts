@@ -6,11 +6,12 @@ import { ConfigModule } from '@nestjs/config';
 import { DocumentModule } from './document/document.module';
 import { Document } from './document/document.entity';
 import { AuthModule } from './auth/auth.module';
-import { Auth } from './auth/auth.entity';
+import { User } from './users/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ReviewModule } from './review/review.module';
 import { Review } from './review/review.entity';
 import { HelperModule } from './helper/helper.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { HelperModule } from './helper/helper.module';
           autoLoadEntities: true,
           synchronize: true,
           host: 'localhost',
-          entities: [Document, Auth, Review],
+          entities: [Document, User, Review],
         };
       },
     }),
@@ -38,6 +39,7 @@ import { HelperModule } from './helper/helper.module';
     AuthModule,
     ReviewModule,
     HelperModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

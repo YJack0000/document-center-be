@@ -1,6 +1,4 @@
 import {
-  ForbiddenException,
-  HttpStatus,
   Inject,
   Injectable,
   Logger,
@@ -8,10 +6,10 @@ import {
 import { IDocumentRepository } from './document.interface';
 import { Document } from './document.entity';
 import { CreateDocumentDto } from './dto/document.dto';
-import { User } from 'src/strategy/jwt.strategy';
 import { HelperService } from 'src/helper/helper.service';
 import { IReviewRepository } from 'src/review/review.interface';
 import { In } from 'typeorm';
+import { UserReq } from 'src/strategy/jwt.strategy';
 
 @Injectable()
 export class DocumentService {
@@ -26,14 +24,14 @@ export class DocumentService {
     this.logger = new Logger(DocumentService.name);
   }
 
-  async getMyDocuments(user: User) {
+  async getMyDocuments(user: UserReq) {
     this.logger.log(`Get My Documents`);
     return await this.documentRepository.findManyByCondition({
       where: { ownerId: user.id },
     });
   }
 
-  async createDocument(user: User, body: CreateDocumentDto): Promise<Document> {
+  async createDocument(user: UserReq, body: CreateDocumentDto): Promise<Document> {
     this.logger.log(`Create Document`);
     const myDocument = {
       ...body,
@@ -51,7 +49,7 @@ export class DocumentService {
   }
 
   async updateMyDocument(
-    user: User,
+    user: UserReq,
     documentId: string,
     body: CreateDocumentDto,
   ): Promise<Document> {
@@ -65,13 +63,13 @@ export class DocumentService {
     return await this.documentRepository.upsert(updatedDocument);
   }
 
-  async deleteMyDocument(user: User, documentId: string): Promise<void> {
+  async deleteMyDocument(user: UserReq, documentId: string): Promise<void> {
     this.logger.log(`Delete Document`);
     await this.helper.checkOwnership(user, documentId);
     await this.documentRepository.removeById(documentId);
   }
 
-  async getDocumentsAssignedToMe(user: User) {
+  async getDocumentsAssignedToMe(user: UserReq) {
     this.logger.log(`Get Documents Assigned To Me`);
     const myReviews = await this.reviewRepository.findManyByCondition({
       where: { reviewerId: user.id },

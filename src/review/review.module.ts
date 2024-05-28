@@ -5,13 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Review } from './review.entity';
 import { ReviewRepository } from 'src/repositories/review.repository';
 import { IReviewRepository } from './review.interface';
-import { IAuthRepository } from 'src/auth/auth.interface';
-import { AuthRepository } from 'src/repositories/auth.repository';
-import { Auth } from 'src/auth/auth.entity';
 import { HelperModule } from 'src/helper/helper.module';
+import { IUserRepository } from 'src/users/user.interface';
+import { UserRepository } from 'src/repositories/user.repository';
+import { User } from 'src/users/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Review, Auth]), HelperModule],
+  imports: [TypeOrmModule.forFeature([Review, User]), HelperModule],
   providers: [
     ReviewService,
     {
@@ -19,8 +19,8 @@ import { HelperModule } from 'src/helper/helper.module';
       useClass: ReviewRepository,
     },
     {
-      provide: IAuthRepository,
-      useClass: AuthRepository,
+      provide: IUserRepository,
+      useClass: UserRepository,
     },
     Logger,
   ],

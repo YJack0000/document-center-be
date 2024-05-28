@@ -22,9 +22,6 @@ export class ReviewRepository
       where: { documentId: data.documentId, reviewerId: data.reviewerId },
     });
     if (review) {
-      console.log('review', review);
-      console.log('data', data);
-      console.log('review + data', { ...review, ...data });
       return await super.save({ ...review, ...data });
     }
     return await super.save(data);

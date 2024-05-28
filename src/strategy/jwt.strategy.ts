@@ -1,7 +1,7 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { IAuthRepository } from 'src/auth/auth.interface';
+import { IUserRepository } from 'src/users/user.interface';
 
 export type JwtPayload = {
   sub: string;
@@ -9,7 +9,7 @@ export type JwtPayload = {
   name: string;
 };
 
-export type User = {
+export type UserReq = {
   id: string;
   email: string;
   name: string;
@@ -18,7 +18,7 @@ export type User = {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
-    @Inject(IAuthRepository) private readonly authRepository: IAuthRepository,
+    @Inject(IUserRepository) private readonly authRepository: IUserRepository,
   ) {
     const extractJwtFromCookie = (req) => {
       let token = null;

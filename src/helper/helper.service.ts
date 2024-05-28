@@ -1,6 +1,6 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { IDocumentRepository } from 'src/document/document.interface';
-import { User } from 'src/strategy/jwt.strategy';
+import { UserReq } from 'src/strategy/jwt.strategy';
 
 @Injectable()
 export class HelperService {
@@ -9,7 +9,7 @@ export class HelperService {
     private readonly documentRepository: IDocumentRepository,
   ) {}
 
-  async checkOwnership(user: User, documentId: string) {
+  async checkOwnership(user: UserReq, documentId: string) {
     // Check if the document exists and belongs to the user
     const document = await this.documentRepository.findOneById(documentId);
     if (!document || document.ownerId !== user.id) {

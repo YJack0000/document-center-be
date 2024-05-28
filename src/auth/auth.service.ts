@@ -5,21 +5,21 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { IAuthRepository } from './auth.interface';
-import { JwtPayload } from 'src/strategy/jwt.strategy';
+import { JwtPayload, UserReq } from 'src/strategy/jwt.strategy';
+import { IUserRepository } from 'src/users/user.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    @Inject(IAuthRepository) private authRepository: IAuthRepository,
+    @Inject(IUserRepository) private authRepository: IUserRepository,
   ) {}
 
   generateJwt(payload: JwtPayload) {
     return this.jwtService.sign(payload);
   }
 
-  async signIn(user) {
+  async signIn(user: UserReq) {
     if (!user) {
       throw new BadRequestException('Unauthenticated');
     }
@@ -36,7 +36,7 @@ export class AuthService {
     });
   }
 
-  async registerUser(user) {
+  async registerUser(user:UserReq) {
     try {
       const newUser = this.authRepository.create(user);
 
@@ -52,7 +52,7 @@ export class AuthService {
     }
   }
 
-  async findUserByEmail(email) {
+  async findUserByEmail(email: string) {
     const user = await this.authRepository.findOne({ where: { email } });
 
     if (!user) {

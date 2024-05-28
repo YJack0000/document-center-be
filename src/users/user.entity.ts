@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
-export class Auth {
+export class User {
   @PrimaryColumn()
   id: string; // oauth_id
 

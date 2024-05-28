@@ -1,21 +1,20 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { IAuthRepository } from './auth.interface';
-import { AuthRepository } from 'src/repositories/auth.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Auth } from './auth.entity';
 import { AuthController } from '../controllers/auth.controller';
-import { JwtService } from '@nestjs/jwt';
 import { GoogleStrategy } from 'src/strategy/google.strategy';
 import { JwtStrategy } from 'src/strategy/jwt.strategy';
+import { User } from 'src/users/user.entity';
+import { IUserRepository } from 'src/users/user.interface';
+import { UserRepository } from 'src/repositories/user.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Auth])],
+  imports: [TypeOrmModule.forFeature([User])],
   providers: [
     AuthService,
     {
-      provide: IAuthRepository,
-      useClass: AuthRepository,
+      provide: IUserRepository,
+      useClass: UserRepository,
     },
     GoogleStrategy,
     JwtStrategy,

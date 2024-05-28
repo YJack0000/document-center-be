@@ -9,14 +9,14 @@ import { IReviewRepository } from './review.interface';
 import { AssignReviewerDto, CreateReviewDto } from './dto/review.dto';
 import { DeepPartial } from 'typeorm';
 import { Review } from './review.entity';
-import { IAuthRepository } from 'src/auth/auth.interface';
-import { User } from 'src/strategy/jwt.strategy';
 import { HelperService } from 'src/helper/helper.service';
+import { IUserRepository } from 'src/users/user.interface';
+import { UserReq } from 'src/strategy/jwt.strategy';
 
 @Injectable()
 export class ReviewService {
   constructor(
-    @Inject(IAuthRepository) private readonly authRepository: IAuthRepository,
+    @Inject(IUserRepository) private readonly authRepository: IUserRepository,
     @Inject(IReviewRepository)
     private readonly reviewRepository: IReviewRepository,
     private readonly logger: Logger,
@@ -26,7 +26,7 @@ export class ReviewService {
   }
 
   async assignReviewer(
-    user: User,
+    user: UserReq,
     documentId: string,
     body: AssignReviewerDto,
   ) {
@@ -49,7 +49,7 @@ export class ReviewService {
   }
 
   async addReviewToDocument(
-    user: User,
+    user: UserReq,
     documentId: string,
     body: CreateReviewDto,
   ) {
@@ -68,7 +68,7 @@ export class ReviewService {
     return await this.reviewRepository.upsert(reviewData);
   }
 
-  async getMyDocumentReviews(user: User, documentId: string) {
+  async getMyDocumentReviews(user: UserReq, documentId: string) {
     this.logger.log(`Get My Document Review`);
     await this.helper.checkOwnership(user, documentId);
     return await this.reviewRepository.findManyByCondition({

@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Auth } from 'src/auth/auth.entity';
-import { IAuthRepository } from 'src/auth/auth.interface';
 import { BaseRepostitory } from 'src/common/base.repository';
+import { User } from 'src/users/user.entity';
+import { IUserRepository } from 'src/users/user.interface';
 import { DeepPartial, Repository } from 'typeorm';
 
 @Injectable()
-export class AuthRepository
-  extends BaseRepostitory<Auth>
-  implements IAuthRepository
+export class UserRepository
+  extends BaseRepostitory<User>
+  implements IUserRepository
 {
   constructor(
-    @InjectRepository(Auth)
-    userRepository: Repository<Auth>,
+    @InjectRepository(User)
+    userRepository: Repository<User>,
   ) {
     super(userRepository);
   }
 
-  public create(data: DeepPartial<Auth>): Auth {
+  public create(data: DeepPartial<User>): User {
     data.createAt = new Date();
 
     return super.create(data);
