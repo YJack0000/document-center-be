@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload, UserReq } from 'src/strategy/jwt.strategy';
@@ -13,13 +14,17 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     @Inject(IUserRepository) private authRepository: IUserRepository,
-  ) {}
+    private readonly logger: Logger
+  ) {
+    this.logger = new Logger(AuthService.name);
+  }
 
   generateJwt(payload: JwtPayload) {
     return this.jwtService.sign(payload);
   }
 
   async signIn(user: UserReq) {
+    this.logger.log(`CallBack: Sign In`);
     if (!user) {
       throw new BadRequestException('Unauthenticated');
     }

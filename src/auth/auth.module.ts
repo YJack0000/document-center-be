@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from '../controllers/auth.controller';
@@ -18,6 +18,7 @@ import { GithubStrategy } from 'src/strategy/github.strategy';
     },
     GithubStrategy,
     JwtStrategy,
+    Logger,
   ],
   controllers: [AuthController],
 })

@@ -2,11 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile } from 'passport';
 import { Strategy } from 'passport-github2';
+// import { Strategy } from 'passport-oauth2';
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
   constructor() {
     super({
+      // authorizationURL: 'https://www.github.com/oauth2/authorize',
+      // tokenURL: 'https://www.github.com/oauth2/token',
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       callbackURL: `${process.env.BASE_URL}/auth/github/callback`,
