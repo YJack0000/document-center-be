@@ -11,4 +11,12 @@ export class UploadImageService {
         await this.minio.createBucketIfNotExists();
         return await this.minio.uploadFile(file);
     }
+
+    async getImageUrl(fileName: string) {
+				return await this.minio.getFileUrl(fileName);
+		}
+
+		async deleteImage(fileName: string) {
+				return await this.minio.deleteFile(fileName);
+		}
 }

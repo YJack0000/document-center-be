@@ -53,13 +53,13 @@ import { MinioModule } from './minio/minio.module';
     UsersModule,
     PublicDocumentModule,
     CommentModule,
-    // UploadImageModule,
-    // MinioModule,
+    UploadImageModule,
+    MinioModule,
   ],
   controllers: [AppController],
   providers: [
     AppService, 
-    // MinioService
+    MinioService
   ],
 })
 export class AppModule {}
