@@ -16,6 +16,10 @@ import { PublicDocumentModule } from './public-document/public-document.module';
 import { PublicDocument } from './public-document/public-document.entity';
 import { CommentModule } from './comment/comment.module';
 import { Comment } from './comment/comment.entity';
+import { MulterModule } from '@nestjs/platform-express';
+import { MinioService } from './minio/minio.service';
+import { UploadImageModule } from './upload-image/upload-image.module';
+import { MinioModule } from './minio/minio.module';
 
 @Module({
   imports: [
@@ -39,6 +43,9 @@ import { Comment } from './comment/comment.entity';
       global: true,
       secret: process.env.JWT_SECRET,
     }),
+    MulterModule.register({
+      dest: './uploads',
+    }),
     DocumentModule,
     AuthModule,
     ReviewModule,
@@ -46,8 +53,13 @@ import { Comment } from './comment/comment.entity';
     UsersModule,
     PublicDocumentModule,
     CommentModule,
+    // UploadImageModule,
+    // MinioModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService, 
+    // MinioService
+  ],
 })
 export class AppModule {}

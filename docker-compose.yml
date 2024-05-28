@@ -9,3 +9,15 @@ services:
       - "5436:5432"
     volumes:
       - ./postgre_data:/var/lib/postgresql/data
+
+  minio:
+    image: docker.io/bitnami/minio
+    env_file:
+      - ./.env
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - './minio_data:/data'
+
+
