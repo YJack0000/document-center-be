@@ -39,6 +39,17 @@ export class PublicDocumentService {
     const { page, limit } = query;
     const totalAmount = await this.publicDocumentRepository.count();
     const data = await this.publicDocumentRepository.findAll({
+      relations: ['owner'],
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        updateAt: true,
+        owner: {
+          id: true,
+          name: true,
+        },
+      },
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -60,7 +71,18 @@ export class PublicDocumentService {
       where: { ownerId: userId },
     });
     const data = await this.publicDocumentRepository.findAll({
+      relations: ['owner'],
       where: { ownerId: userId },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        updateAt: true,
+        owner: {
+          id: true,
+          name: true,
+        },
+      },
       skip: (page - 1) * limit,
       take: limit,
     });
