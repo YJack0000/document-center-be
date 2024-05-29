@@ -47,7 +47,6 @@ export class ReviewService {
       ...body,
       documentId: documentId,
       reviewerId: body.reviewerId,
-      reviewerName: reviewer.name,
     };
     return await this.reviewRepository.upsert(reviewData);
   }
@@ -60,7 +59,18 @@ export class ReviewService {
     this.logger.log(`Add Review`);
     // check you are the reviewer
     const review = await this.reviewRepository.findOne({
+      relations: ['reviewer'],
       where: { documentId: documentId, reviewerId: user.id },
+      select: {
+        id: true,
+        documentId: true,
+        comment: true,
+        status: true,
+        reviewer: {
+          id: true,
+          name: true,
+        },
+      }
     });
     if (!review) {
       throw new ForbiddenException('You are not the reviewer');
@@ -84,7 +94,17 @@ export class ReviewService {
       where: { documentId: documentId },
     });
     const data = await this.reviewRepository.findAll({
+      relations: ['reviewer'],
       where: { documentId: documentId },
+      select: {
+        id: true,
+        comment: true,
+        status: true,
+        reviewer: {
+          id: true,
+          name: true,
+        },
+      },
       skip: (page - 1) * limit,
       take: limit,
     });

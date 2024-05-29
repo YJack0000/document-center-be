@@ -23,7 +23,18 @@ export class CommentService {
       where: { documentId },
     });
     const data = await this.commentRepository.findAll({
+      relations: ['user'],
       where: { documentId },
+      select: {
+        id: true,
+        documentId: true,
+        content: true,
+        createAt: true,
+        user: {
+          id: true,
+          name: true,
+        },
+      },
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -45,7 +56,6 @@ export class CommentService {
       documentId,
       content,
       userId: id,
-      username: name,
     };
 
     const newComment = this.commentRepository.create(comment);
