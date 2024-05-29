@@ -11,6 +11,7 @@ import {
   Req,
   Res,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { DocumentService } from '../document/document.service';
 import { Document } from '../document/document.entity';
@@ -30,7 +31,7 @@ export class DocumentController {
   @UseGuards(JwtAuthGuard, UserGuard)
   async getDocuments(
     @Req() req,
-    @Query() query: PaginationReqDto,
+    @Query(new ValidationPipe({ transform: true })) query: PaginationReqDto,
     @Res() res,
   ): Promise<PaginationResDto<Document>> {
     const result = await this.documentService.getMyDocuments(req.user, query);
@@ -101,12 +102,12 @@ export class DocumentController {
   @UseGuards(JwtAuthGuard, UserGuard)
   async getDocumentsAssignedToMe(
     @Req() req,
-    @Query() query: PaginationReqDto,
+    @Query(new ValidationPipe({ transform: true })) query: PaginationReqDto,
     @Res() res,
-  ): Promise<PaginationResDto<Document>>{
+  ): Promise<PaginationResDto<Document>> {
     const result = await this.documentService.getDocumentsAssignedToMe(
       req.user,
-      query
+      query,
     );
     return res.status(HttpStatus.OK).json(result);
   }

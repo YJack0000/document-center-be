@@ -9,6 +9,7 @@ import {
   Req,
   Res,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { PaginationReqDto } from 'src/common/pagination.dto';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
@@ -59,7 +60,7 @@ export class ReviewController {
   async getReviewByDocumentId(
     @Req() req,
     @Param('documentId') documentId: string,
-    @Query() query: PaginationReqDto,
+    @Query(new ValidationPipe({ transform: true })) query: PaginationReqDto,
     @Res() res,
   ): Promise<PaginationResDto<Review>> {
     const result = await this.reviewService.getMyDocumentReviews(
