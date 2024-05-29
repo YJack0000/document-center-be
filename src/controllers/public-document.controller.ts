@@ -9,6 +9,7 @@ import {
   Req,
   Res,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
@@ -23,7 +24,7 @@ export class PublicDocumentController {
 
   @Get('/all')
   async getAllPublicDocuments(
-    @Query() query: PaginationReqDto,
+    @Query(new ValidationPipe({ transform: true })) query: PaginationReqDto,
     @Res() res,
   ): Promise<PaginationResDto<PublicDocument>> {
     const result =
@@ -34,7 +35,7 @@ export class PublicDocumentController {
   @Get('/:userId')
   async getPublicDocumentsByUserId(
     @Param('userId') userId: string,
-    @Query() query: PaginationReqDto,
+    @Query(new ValidationPipe({ transform: true })) query: PaginationReqDto,
     @Res() res,
   ): Promise<PaginationResDto<PublicDocument>> {
     const result = await this.publicDocumentService.getPublicDocumentsByUserId(

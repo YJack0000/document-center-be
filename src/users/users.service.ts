@@ -16,12 +16,13 @@ export class UsersService {
   async getAllUsers(query: PaginationReqDto): Promise<PaginationResDto<User>> {
     this.logger.log(`Get All Users`);
     const { page, limit } = query;
+    console.log(`page: ${page} limit: ${limit}`);
     const totalAmount = await this.userRepository.count();
     const data = await this.userRepository.findAll({
       skip: (page - 1) * limit,
       take: limit,
     });
-    
+
     return {
       data,
       page: Number(page),

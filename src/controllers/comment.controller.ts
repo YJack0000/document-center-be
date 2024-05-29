@@ -8,6 +8,7 @@ import {
   Req,
   Res,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CommentService } from 'src/comment/comment.service';
 import { CreateCommentDto, GetCommentDto } from 'src/comment/dto/comment.dto';
@@ -21,7 +22,7 @@ export class CommentController {
 
   @Get()
   async getAllComments(
-    @Query() query: GetCommentDto,
+    @Query(new ValidationPipe({ transform: true })) query: GetCommentDto,
     @Res() res,
   ): Promise<PaginationResDto<Comment>> {
     const result = await this.commentService.getAllComments(query);
