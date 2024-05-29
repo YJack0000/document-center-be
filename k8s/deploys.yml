@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: document-center-be
-        image: yjack0000cs12/document-center-be:v60
+        image: yjack0000cs12/document-center-be:v61
         ports:
         - containerPort: 3000
         envFrom:
