@@ -1,3 +1,7 @@
+import { Comment } from 'src/comment/comment.entity';
+import { Document } from 'src/document/document.entity';
+import { PublicDocument } from 'src/public-document/public-document.entity';
+import { Review } from 'src/review/review.entity';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
@@ -11,9 +15,14 @@ export class User {
   @Column()
   name: string;
 
-  @Column({default: false})
+  @Column({ default: false })
   isManager: boolean;
 
   @Column()
   createAt: Date;
+
+  comments: Comment[];
+  documents: Document[];
+  publicDocuments: PublicDocument[];
+  reviews: Review[];
 }

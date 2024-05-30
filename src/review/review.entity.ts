@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/users/user.entity';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Review {
@@ -11,9 +12,6 @@ export class Review {
   @Column()
   reviewerId: string;
 
-  @Column()
-  reviewerName: string;
-
   @Column({ default: '' })
   comment: string;
 
@@ -22,4 +20,8 @@ export class Review {
     default: 'wait',
   })
   status: string;
+
+  @ManyToOne(() => User, (user) => user.reviews) 
+  @JoinColumn({ name: 'reviewerId' })
+  reviewer: User; 
 }

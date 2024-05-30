@@ -1,12 +1,15 @@
+import { User } from 'src/users/user.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity()
 export class Document {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
@@ -28,4 +31,8 @@ export class Document {
 
   @Column()
   createAt: Date;
+
+  @ManyToOne(() => User, (user) => user.documents)
+  @JoinColumn({ name: 'ownerId' })
+  owner: User;
 }
