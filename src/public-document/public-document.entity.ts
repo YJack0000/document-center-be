@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { User } from 'src/users/user.entity';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class PublicDocument {
@@ -16,4 +17,8 @@ export class PublicDocument {
 
   @Column()
   updateAt: Date;
+
+  @ManyToOne(() => User, (user) => user.publicDocuments)
+  @JoinColumn({ name: 'ownerId' })
+  owner: User;
 }

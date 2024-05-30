@@ -37,7 +37,20 @@ export class DocumentService {
       where: { ownerId: user.id },
     });
     const data = await this.documentRepository.findAll({
+      relations: ['owner'],
       where: { ownerId: user.id },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        status: true,
+        createAt: true,
+        updateAt: true,
+        owner: {
+          id: true,
+          name: true,
+        },
+      },
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -67,7 +80,22 @@ export class DocumentService {
 
   async getDocumentById(documentId: string): Promise<Document> {
     this.logger.log(`Get Document By Id`);
-    return await this.documentRepository.findOneById(documentId);
+    return await this.documentRepository.findOne({
+      relations: ['owner'],
+      where: { id: documentId },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        status: true,
+        createAt: true,
+        updateAt: true,
+        owner: {
+          id: true,
+          name: true,
+        },
+      },
+    });
   }
 
   async updateMyDocument(
@@ -138,7 +166,20 @@ export class DocumentService {
       where: { id: In(documentIds) },
     });
     const data = await this.documentRepository.findAll({
+      relations: ['owner'],
       where: { id: In(documentIds) },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        status: true,
+        createAt: true,
+        updateAt: true,
+        owner: {
+          id: true,
+          name: true,
+        },
+      },
       skip: (page - 1) * limit,
       take: limit,
     });
