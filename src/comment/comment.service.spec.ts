@@ -46,6 +46,17 @@ describe('CommentService', () => {
                 where: { documentId: '1' },
                 skip: 0,
                 take: 10,
+                select: {
+                    id: true,
+                    documentId: true,
+                    content: true,
+                    createAt: true,
+                    user: {
+                        id: true,
+                        name: true,
+                    },
+                },
+                relations: ["user"],
             });
         });
     });
@@ -57,7 +68,6 @@ describe('CommentService', () => {
             const expected = {
                 documentId: '1',
                 userId: userReq.id,
-                username: userReq.name,
                 content: 'Good Performance',
             };
 
@@ -66,7 +76,11 @@ describe('CommentService', () => {
 
             const result = await service.createComment(userReq, createCommentDto);
             expect(result).toEqual(expected);
-            expect(commentRepository.create).toHaveBeenCalledWith(expected);
+            expect(commentRepository.create).toHaveBeenCalledWith({
+                documentId: '1',
+                userId: userReq.id,
+                content: 'Good Performance',
+            });
             expect(commentRepository.save).toHaveBeenCalledWith(expected);
         });
     });
