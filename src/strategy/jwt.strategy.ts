@@ -28,13 +28,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       if (req && req.cookies) {
         token = req.cookies['access_token'];
       } else {
-        let pairs = req.headers.cookie.split(';');
-        pairs.forEach((pair) => {
-          const [key, value] = pair.split('=');
-          if (key.trim() === 'access_token') {
-            token = value;
-          }
-        });
+        if (req.headers.cookie) {
+          let pairs = req.headers.cookie.split(';');
+          pairs.forEach((pair) => {
+            const [key, value] = pair.split('=');
+            if (key.trim() === 'access_token') {
+              token = value;
+            }
+          });
+        }
       }
       return token || ExtractJwt.fromAuthHeaderAsBearerToken()(req);
     };
