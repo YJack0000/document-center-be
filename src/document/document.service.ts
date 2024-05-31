@@ -27,6 +27,36 @@ export class DocumentService {
     this.logger = new Logger(DocumentService.name);
   }
 
+  async getAllDocuments(query: PaginationReqDto): Promise<PaginationResDto<Document>> {
+    this.logger.log(`Get All Documents`);
+    const { page, limit } = query;
+    const totalAmount = await this.documentRepository.count();
+    const data = await this.documentRepository.findAll({
+      relations: ['owner'],
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        status: true,
+        createAt: true,
+        updateAt: true,
+        owner: {
+          id: true,
+          name: true,
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      data,
+      page: Number(page),
+      limit: Number(limit),
+      total: Math.ceil(totalAmount / limit),
+    };
+  }
+
   async getMyDocuments(
     user: UserReq,
     query: PaginationReqDto,

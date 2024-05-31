@@ -22,10 +22,21 @@ import {
 import { UserGuard } from 'src/guard/user.guard';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
+import { SuperUserGuard } from 'src/guard/super-user.guard';
 
 @Controller('documents')
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
+
+  @Get('/all')
+  @UseGuards(JwtAuthGuard, SuperUserGuard)
+  async getAllDocuments(
+    @Query(new ValidationPipe({ transform: true })) query: PaginationReqDto,
+    @Res() res,
+  ): Promise<PaginationResDto<Document>> {
+    const result = await this.documentService.getAllDocuments(query);
+    return res.status(HttpStatus.OK).json(result);
+  }
 
   @Get('/me')
   @UseGuards(JwtAuthGuard, UserGuard)
