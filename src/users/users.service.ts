@@ -35,7 +35,7 @@ export class UsersService {
   async checkUserPrivilege(user: User): Promise<CheckUserPrivilegeResDto> {
     this.logger.log(`Check User Privilege`);
     return {
-      isSuperUser: user.isSuperUser == true,
+      privilege: user.isSuperUser == true ? 'superuser' : 'user',
     };
   }
 
