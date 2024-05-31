@@ -7,6 +7,7 @@ export type JwtPayload = {
   sub: string;
   email: string;
   name: string;
+  isSuperUser: boolean;
   exp: number;
 };
 
@@ -14,6 +15,7 @@ export type UserReq = {
   id: string;
   email: string;
   name: string;
+  isSuperUser: boolean;
 };
 
 @Injectable()
@@ -58,6 +60,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       id: payload.sub,
       email: payload.email,
       name: payload.name,
+      isSuperUser: payload.isSuperUser,
     };
   }
 }
