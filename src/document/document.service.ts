@@ -27,7 +27,9 @@ export class DocumentService {
     this.logger = new Logger(DocumentService.name);
   }
 
-  async getAllDocuments(query: PaginationReqDto): Promise<PaginationResDto<Document>> {
+  async getAllDocuments(
+    query: PaginationReqDto,
+  ): Promise<PaginationResDto<Document>> {
     this.logger.log(`Get All Documents`);
     const { page, limit } = query;
     const totalAmount = await this.documentRepository.count();
@@ -53,7 +55,7 @@ export class DocumentService {
       data,
       page: Number(page),
       limit: Number(limit),
-      total: Math.ceil(totalAmount / limit),
+      totalPage: Math.ceil(totalAmount / limit),
     };
   }
 
@@ -89,7 +91,7 @@ export class DocumentService {
       data,
       page: Number(page),
       limit: Number(limit),
-      total: Math.ceil(totalAmount / limit),
+      totalPage: Math.ceil(totalAmount / limit),
     };
   }
 
@@ -218,7 +220,7 @@ export class DocumentService {
       data,
       page: Number(page),
       limit: Number(limit),
-      total: Math.ceil(totalAmount / limit),
+      totalPage: Math.ceil(totalAmount / limit),
     };
   }
 }

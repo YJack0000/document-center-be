@@ -26,7 +26,7 @@ export class PaginationResDto<T> {
   limit: number;
 
   @ApiProperty()
-  total: number;
+  totalPage: number;
 
   @ApiProperty()
   data: T[];
