@@ -63,7 +63,7 @@ describe('CommentService', () => {
 
     describe('createComment', () => {
         it('Create & return a comment', async () => {
-            const userReq = { id: 'user1', name: 'Emily', email: 'emily@gmail.com' };
+            const userReq = { id: 'user1', name: 'Emily', email: 'emily@gmail.com', isSuperUser: false};
             const createCommentDto = { documentId: '1', content: 'Good Performance' };
             const expected = {
                 documentId: '1',
