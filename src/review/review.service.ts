@@ -31,11 +31,6 @@ export class ReviewService {
     documentId: string,
     body: AssignReviewerDto,
   ) {
-    this.logger.log(`Assign Reviewer`);
-    await this.helper.checkOwnership(user, documentId);
-    if (user.id === body.reviewerId) {
-      throw new ForbiddenException('You cannot assign yourself as a reviewer');
-    }
     // Get reviewer name
     const reviewer = await this.authRepository.findOne({
       where: { id: body.reviewerId },
@@ -48,7 +43,28 @@ export class ReviewService {
       documentId: documentId,
       reviewerId: body.reviewerId,
     };
-    return await this.reviewRepository.upsert(reviewData);
+    if (user.isSuperUser) {
+      this.logger.log(`Super User Assign Reviewer`);
+      // update other review data, which status is wait, to transfer
+      await this.reviewRepository.updateMany(
+        {
+          where: { documentId: body.reviewerId, status: 'wait' },
+        },
+        {
+          status: 'transfer',
+        },
+      );
+    } else {
+      this.logger.log(`Document Owner Assign Reviewer`);
+      await this.helper.checkOwnership(user, documentId);
+      if (user.id === body.reviewerId) {
+        throw new ForbiddenException(
+          'You cannot assign yourself as a reviewer',
+        );
+      }
+    }
+    await this.helper.changeDocumentStatus(documentId, 'review');
+    return await this.reviewRepository.save(reviewData);
   }
 
   async addReviewToDocument(
@@ -70,7 +86,7 @@ export class ReviewService {
           id: true,
           name: true,
         },
-      }
+      },
     });
     if (!review) {
       throw new ForbiddenException('You are not the reviewer');

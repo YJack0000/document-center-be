@@ -9,6 +9,10 @@ export interface BaseInterfaceRepository<T> {
   findOneByCondition(filterCondition: FindOneOptions<T>): Promise<T>;
   findAll(options?: FindManyOptions<T>): Promise<T[]>;
   count(options?: FindManyOptions<T>): Promise<number>;
+  updateMany(
+    filterCondition: FindManyOptions<T>,
+    updateData: DeepPartial<T>,
+  ): Promise<T[]>;
   removeById(id: string): Promise<T>;
   removeManyByCondition(filterCondition: FindManyOptions<T>): Promise<T[]>;
   findWithRelations(relations: FindManyOptions<T>): Promise<T[]>;
