@@ -48,7 +48,7 @@ export class ReviewService {
       // update other review data, which status is wait, to transfer
       await this.reviewRepository.updateMany(
         {
-          where: { documentId: body.reviewerId, status: 'wait' },
+          where: { documentId: documentId, status: 'wait' },
         },
         {
           status: 'transfer',
@@ -62,6 +62,13 @@ export class ReviewService {
           'You cannot assign yourself as a reviewer',
         );
       }
+    }
+    // if there is already a review, throw an error
+    const review = await this.reviewRepository.findOne({
+      where: { documentId: documentId, status: 'wait' },
+    });
+    if (review) {
+      throw new ForbiddenException('Reviewer already assigned');
     }
     await this.helper.changeDocumentStatus(documentId, 'review');
     return await this.reviewRepository.save(reviewData);
@@ -114,6 +121,7 @@ export class ReviewService {
       where: { documentId: documentId },
       select: {
         id: true,
+        documentId: true,
         comment: true,
         status: true,
         reviewer: {
