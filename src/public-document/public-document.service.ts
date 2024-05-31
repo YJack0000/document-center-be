@@ -58,7 +58,7 @@ export class PublicDocumentService {
       data,
       page: Number(page),
       limit: Number(limit),
-      total: Math.ceil(totalAmount / limit),
+      totalPage: Math.ceil(totalAmount / limit),
     };
   }
 
@@ -91,7 +91,7 @@ export class PublicDocumentService {
       data,
       page: Number(page),
       limit: Number(limit),
-      total: Math.ceil(totalAmount / limit),
+      totalPage: Math.ceil(totalAmount / limit),
     };
   }
 

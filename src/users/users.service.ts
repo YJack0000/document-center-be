@@ -28,7 +28,7 @@ export class UsersService {
       data,
       page: Number(page),
       limit: Number(limit),
-      total: Math.ceil(totalAmount / limit),
+      totalPage: Math.ceil(totalAmount / limit),
     };
   }
 
