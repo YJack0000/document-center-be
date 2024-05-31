@@ -41,7 +41,7 @@ describe('UsersService', () => {
     it('should return all users', async () => {
         const result = await service.getAllUsers({ page: 1, limit: 10 });
         expect(result.data.length).toBe(10);
-        expect(result.total).toBe(1);
+        expect(result.totalPage).toBe(1);
     });
 
     it('should return a user by ID', async () => {

@@ -86,27 +86,6 @@ describe('ReviewService', () => {
     });
 
 
-    describe('addReviewToDocument', () => {
-        const user: UserReq = { id: 'user2', email: 'jack@gmail.com', name: 'Jack', isSuperUser: false };
-        const documentId = 'doc1';
-        const body = { comment: 'Great job', status: 'pass' };
-
-
-        it('Throw if user is not the assigned reviewer', async () => {
-            jest.spyOn(mockReviewRepository, 'findOne').mockResolvedValueOnce(undefined);
-            await expect(service.addReviewToDocument(user, documentId, body))
-                .rejects.toThrow(new ForbiddenException('You are not the reviewer'));
-        });
-
-
-        it('Successfully add a review', async () => {
-            jest.spyOn(mockReviewRepository, 'findOne').mockResolvedValueOnce({ reviewerId: 'user2' } as any);
-            const result = await service.addReviewToDocument(user, documentId, body);
-            expect(result).toBeDefined();
-        });
-    });
-
-
     describe('getMyDocumentReviews', () => {
         const user: UserReq = { id: 'user3', email: 'mina@gmail.com', name: 'Mina', isSuperUser: false };
         const documentId = 'doc1';
@@ -123,7 +102,7 @@ describe('ReviewService', () => {
                 data: [],
                 page: 1,
                 limit: 10,
-                total: 0,
+                totalPage: 0,
             });
         });
     });

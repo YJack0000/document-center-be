@@ -43,6 +43,10 @@ export class MockUserRepository implements IUserRepository {
         return Promise.resolve({ ...data } as User);
     }
 
+    updateOne(filterCondition: FindOneOptions<User>, updateData: DeepPartial<User>): Promise<User> {
+        return Promise.reject('not implemented');
+    }
+
     updateMany(filterCondition: FindManyOptions<User>, updateData: DeepPartial<User>): Promise<User[]> {
         const allUsers = Array.from(this.users.values()).filter(user =>
             Object.entries(filterCondition.where).every(([key, value]) => user[key] === value)
