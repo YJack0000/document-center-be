@@ -17,6 +17,7 @@ import { DocumentService } from '../document/document.service';
 import { Document } from '../document/document.entity';
 import {
   CreateDocumentDto,
+  UpdateDocumentDto,
   UpdateStatusDto,
 } from 'src/document/dto/document.dto';
 import { UserGuard } from 'src/guard/user.guard';
@@ -53,7 +54,7 @@ export class DocumentController {
   @UseGuards(JwtAuthGuard, UserGuard)
   async createDocument(
     @Req() req,
-    @Body() body: CreateDocumentDto,
+    @Body(new ValidationPipe({ transform: true })) body: CreateDocumentDto,
     @Res() res,
   ) {
     const result = await this.documentService.createDocument(req.user, body);
@@ -71,7 +72,7 @@ export class DocumentController {
   async updateDocument(
     @Req() req,
     @Param('documentId') documentId: string,
-    @Body() body: CreateDocumentDto,
+    @Body(new ValidationPipe({ transform: true })) body: UpdateDocumentDto,
     @Res() res,
   ) {
     const result = await this.documentService.updateMyDocument(
