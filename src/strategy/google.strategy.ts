@@ -22,7 +22,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const { id, name, emails } = profile;
 
     // if email is end with "nycu.edu.tw" then user is Manager
-    const isSuperUser = emails[0].value.endsWith('cs12.nycu.edu.tw');
+    const isSuperUser = emails[0].value.endsWith('nycu.edu.tw');
 
     const user = {
       id: id,
