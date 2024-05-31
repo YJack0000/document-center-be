@@ -17,15 +17,27 @@ import { DocumentService } from '../document/document.service';
 import { Document } from '../document/document.entity';
 import {
   CreateDocumentDto,
+  UpdateDocumentDto,
   UpdateStatusDto,
 } from 'src/document/dto/document.dto';
 import { UserGuard } from 'src/guard/user.guard';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
+import { SuperUserGuard } from 'src/guard/super-user.guard';
 
 @Controller('documents')
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
+
+  @Get('/all')
+  @UseGuards(JwtAuthGuard, SuperUserGuard)
+  async getAllDocuments(
+    @Query(new ValidationPipe({ transform: true })) query: PaginationReqDto,
+    @Res() res,
+  ): Promise<PaginationResDto<Document>> {
+    const result = await this.documentService.getAllDocuments(query);
+    return res.status(HttpStatus.OK).json(result);
+  }
 
   @Get('/me')
   @UseGuards(JwtAuthGuard, UserGuard)
@@ -42,7 +54,7 @@ export class DocumentController {
   @UseGuards(JwtAuthGuard, UserGuard)
   async createDocument(
     @Req() req,
-    @Body() body: CreateDocumentDto,
+    @Body(new ValidationPipe({ transform: true })) body: CreateDocumentDto,
     @Res() res,
   ) {
     const result = await this.documentService.createDocument(req.user, body);
@@ -60,7 +72,7 @@ export class DocumentController {
   async updateDocument(
     @Req() req,
     @Param('documentId') documentId: string,
-    @Body() body: CreateDocumentDto,
+    @Body(new ValidationPipe({ transform: true })) body: UpdateDocumentDto,
     @Res() res,
   ) {
     const result = await this.documentService.updateMyDocument(

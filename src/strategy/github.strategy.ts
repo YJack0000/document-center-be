@@ -21,14 +21,18 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     accessToken: string,
     _refreshToken: string,
     profile: Profile,
-    cb
+    cb,
   ) {
     const { id, username, emails } = profile;
+
+    // if email is end with "nycu.edu.tw" then user is Manager
+    const isSuperUser = emails[0].value.endsWith('cs12.nycu.edu.tw');
 
     const user = {
       id: id,
       email: emails[0].value,
       name: username,
+      isSuperUser: isSuperUser,
       createAt: new Date(),
     };
 

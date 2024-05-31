@@ -43,4 +43,12 @@ export class HelperService {
     }
     return 'reviewer';
   }
+
+  async changeDocumentStatus(documentId: string, status: string) {
+    // Update the document status
+    await this.documentRepository.upsert({
+      id: documentId,
+      status: status,
+    });
+  }
 }

@@ -16,7 +16,7 @@ export class User {
   name: string;
 
   @Column({ default: false })
-  isManager: boolean;
+  isSuperUser: boolean;
 
   @Column()
   createAt: Date;

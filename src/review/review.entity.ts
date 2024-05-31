@@ -16,7 +16,7 @@ export class Review {
   comment: string;
 
   @Column({
-    enum: ['pass', 'reject', 'wait'],
+    enum: ['pass', 'reject', 'wait', 'transfer'],
     default: 'wait',
   })
   status: string;

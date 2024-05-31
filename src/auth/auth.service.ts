@@ -38,6 +38,7 @@ export class AuthService {
       sub: userExists.id,
       email: userExists.email,
       name: userExists.name,
+      isSuperUser: userExists.isSuperUser,
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
     });
   }
@@ -52,6 +53,7 @@ export class AuthService {
         sub: newUser.id,
         email: newUser.email,
         name: newUser.name,
+        isSuperUser: newUser.isSuperUser,
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
       });
     } catch (e) {

@@ -60,6 +60,14 @@ export class BaseRepostitory<T extends HasId>
     return await this.entity.count(options);
   }
 
+  public async updateMany(
+    filterCondition: FindManyOptions<T>,
+    updateData: DeepPartial<T>,
+  ): Promise<T[]> {
+    const entities = await this.entity.find(filterCondition);
+    return await this.entity.save(entities.map((entity) => ({ ...entity, ...updateData })));
+  }
+
   public async removeById(id: string): Promise<T> {
     const entity = await this.findOneById(id);
     return await this.entity.remove(entity);
