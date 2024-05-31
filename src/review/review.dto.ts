@@ -8,6 +8,4 @@ export class AssignReviewerDto {
 export class CreateReviewDto {
   @ApiProperty()
   comment: string;
-  @ApiProperty({ enum: ['pass', 'reject'] })
-  status: string;
 }

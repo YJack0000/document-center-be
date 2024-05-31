@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { IReviewRepository } from './review.interface';
-import { AssignReviewerDto, CreateReviewDto } from './dto/review.dto';
+import { AssignReviewerDto, CreateReviewDto } from './review.dto';
 import { DeepPartial } from 'typeorm';
 import { Review } from './review.entity';
 import { HelperService } from 'src/helper/helper.service';
@@ -52,6 +52,7 @@ export class ReviewService {
         },
         {
           status: 'transfer',
+          updatedAt: new Date(),
         },
       );
     } else {
@@ -74,35 +75,78 @@ export class ReviewService {
     return await this.reviewRepository.save(reviewData);
   }
 
-  async addReviewToDocument(
+  async passReview(user: UserReq, documentId: string, body: CreateReviewDto) {
+    this.logger.log(`Pass Review`);
+    const role = await this.helper.checkIsReviewerOrOwner(user, documentId);
+    if (role === 'owner') {
+      throw new ForbiddenException('Owner cannot pass the review');
+    }
+    await this.helper.changeDocumentStatus(documentId, 'pass');
+    return await this.reviewRepository.updateOne(
+      {
+        where: { documentId: documentId, reviewerId: user.id, status: 'wait' },
+      },
+      {
+        status: 'pass',
+        comment: body.comment,
+        updatedAt: new Date(),
+      },
+    );
+  }
+
+  async rejectReview(user: UserReq, documentId: string, body: CreateReviewDto) {
+    this.logger.log(`Reject Review`);
+    const role = await this.helper.checkIsReviewerOrOwner(user, documentId);
+    if (role === 'owner') {
+      throw new ForbiddenException('Owner cannot reject the review');
+    }
+    await this.helper.changeDocumentStatus(documentId, 'edit');
+    return await this.reviewRepository.updateOne(
+      {
+        where: { documentId: documentId, reviewerId: user.id, status: 'wait' },
+      },
+      {
+        status: 'reject',
+        comment: body.comment,
+        updatedAt: new Date(),
+      },
+    );
+  }
+
+  async getMyReviews(
     user: UserReq,
-    documentId: string,
-    body: CreateReviewDto,
-  ) {
-    this.logger.log(`Add Review`);
-    // check you are the reviewer
-    const review = await this.reviewRepository.findOne({
-      relations: ['reviewer'],
-      where: { documentId: documentId, reviewerId: user.id },
+    query: PaginationReqDto,
+  ): Promise<PaginationResDto<Review>> {
+    this.logger.log(`Get My Review`);
+    const { page, limit } = query;
+    const totalAmount = await this.reviewRepository.count({
+      where: { reviewerId: user.id },
+    });
+    const data = await this.reviewRepository.findAll({
+      relations: ['document'],
+      where: { reviewerId: user.id },
       select: {
         id: true,
         documentId: true,
         comment: true,
         status: true,
-        reviewer: {
+        createdAt: true,
+        updatedAt: true,
+        document: {
           id: true,
-          name: true,
+          title: true,
         },
       },
+      skip: (page - 1) * limit,
+      take: limit,
     });
-    if (!review) {
-      throw new ForbiddenException('You are not the reviewer');
-    }
-    let reviewData: DeepPartial<Review> = {
-      ...body,
-      documentId: documentId,
+
+    return {
+      data,
+      page: Number(page),
+      limit: Number(limit),
+      totalPage: Math.ceil(totalAmount / limit),
     };
-    return await this.reviewRepository.upsert(reviewData);
   }
 
   async getMyDocumentReviews(
@@ -124,6 +168,8 @@ export class ReviewService {
         documentId: true,
         comment: true,
         status: true,
+        createdAt: true,
+        updatedAt: true,
         reviewer: {
           id: true,
           name: true,
