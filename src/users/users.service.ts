@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { IUserRepository } from './user.interface';
 import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
 import { User } from './user.entity';
+import { CheckUserPrivilegeResDto } from './users.dto';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +29,13 @@ export class UsersService {
       page: Number(page),
       limit: Number(limit),
       total: Math.ceil(totalAmount / limit),
+    };
+  }
+
+  async checkUserPrivilege(user: User): Promise<CheckUserPrivilegeResDto> {
+    this.logger.log(`Check User Privilege`);
+    return {
+      isSuperUser: user.isSuperUser == true,
     };
   }
 
