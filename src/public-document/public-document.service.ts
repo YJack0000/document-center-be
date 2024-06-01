@@ -96,7 +96,12 @@ export class PublicDocumentService {
   }
 
   private async publishDocument(documentId: string): Promise<PublicDocument> {
-    const document = await this.documentRepository.findOneById(documentId);
+    const document = await this.documentRepository.findOne({
+      where: { id: documentId, status: 'pass'},
+    });
+    if (!document) {
+      throw new NotFoundException('Document not found or not pass review');
+    }
     const publicDocument = this.publicDocumentRepository.create(document);
     return await this.publicDocumentRepository.save(publicDocument);
   }

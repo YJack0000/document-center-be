@@ -1,5 +1,12 @@
+import { Document } from 'src/document/document.entity';
 import { User } from 'src/users/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Review {
@@ -21,7 +28,17 @@ export class Review {
   })
   status: string;
 
-  @ManyToOne(() => User, (user) => user.reviews) 
+  @Column()
+  createdAt: Date;
+
+  @Column()
+  updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.reviews)
   @JoinColumn({ name: 'reviewerId' })
-  reviewer: User; 
+  reviewer: User;
+
+  @ManyToOne(() => Document, (document) => document.reviews)
+  @JoinColumn({ name: 'documentId'})
+  document: Document;
 }

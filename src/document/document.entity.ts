@@ -1,3 +1,4 @@
+import { Review } from 'src/review/review.entity';
 import { User } from 'src/users/user.entity';
 import {
   Column,
@@ -35,4 +36,6 @@ export class Document {
   @ManyToOne(() => User, (user) => user.documents)
   @JoinColumn({ name: 'ownerId' })
   owner: User;
+
+  reviews: Review[];
 }

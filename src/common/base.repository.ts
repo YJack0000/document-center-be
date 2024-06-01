@@ -65,7 +65,17 @@ export class BaseRepostitory<T extends HasId>
     updateData: DeepPartial<T>,
   ): Promise<T[]> {
     const entities = await this.entity.find(filterCondition);
-    return await this.entity.save(entities.map((entity) => ({ ...entity, ...updateData })));
+    return await this.entity.save(
+      entities.map((entity) => ({ ...entity, ...updateData })),
+    );
+  }
+
+  public async updateOne(
+    filterCondition: FindOneOptions<T>,
+    updateData: DeepPartial<T>,
+  ): Promise<T> {
+    const entity = await this.entity.findOne(filterCondition);
+    return await this.entity.save({ ...entity, ...updateData });
   }
 
   public async removeById(id: string): Promise<T> {
