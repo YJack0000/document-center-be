@@ -33,14 +33,20 @@ export class HelperService {
     documentId: string,
   ): Promise<string> {
     // Check if the user is the reviewer or the owner of the document
-    const review = await this.reviewRepository.findOne({
-      where: { documentId: documentId, reviewerId: user.id },
+    const reviews = await this.reviewRepository.findAll({
+      where: { documentId: documentId, reviewerId: user.id},
     });
-    if (!review) {
+    if (reviews.length == 0) {
       // User is not the reviewer
       await this.checkOwnership(user, documentId);
       return 'owner';
     }
+    // Check there is a review with status 'wait'
+    const waitReview = reviews.find((review) => review.status === 'wait');
+    if (!waitReview) {
+      throw new ForbiddenException('You have already reviewed this document');
+    }
+
     return 'reviewer';
   }
 

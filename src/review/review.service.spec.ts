@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ReviewService } from './review.service';
-import { MockReviewRepository } from '../mockRepositories/mockReviewRepo';
 import { IReviewRepository } from './review.interface';
 import { Logger } from '@nestjs/common';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
@@ -8,6 +7,7 @@ import { UserReq } from 'src/strategy/jwt.strategy';
 import { PaginationReqDto } from 'src/common/pagination.dto';
 import { HelperService } from '../helper/helper.service';
 import { IUserRepository } from 'src/users/user.interface';
+import { MockReviewRepository } from '../mockRepositories/mockReviewRepo';
 import { MockUserRepository } from 'src/mockRepositories/mockUserRepo';
 
 describe('ReviewService', () => {
@@ -22,6 +22,7 @@ describe('ReviewService', () => {
         mockUserRepository = new MockUserRepository();
         mockHelperService = {
             checkOwnership: jest.fn().mockResolvedValue(true),
+            checkIsReviewerOrOwner: jest.fn().mockResolvedValue('reviewer'), // Default response setup
             changeDocumentStatus: jest.fn().mockResolvedValue(null),
         } as any;
 
@@ -62,17 +63,19 @@ describe('ReviewService', () => {
         });
 
         it('Throw if reviewer not found', async () => {
-            jest.spyOn(mockUserRepository, 'findOne').mockResolvedValueOnce(undefined);
+            jest.spyOn(mockUserRepository, 'findOne').mockResolvedValueOnce(null);
             await expect(service.assignReviewer(user, documentId, body))
                 .rejects.toThrow(new NotFoundException('Reviewer not found'));
         });
 
         it('Successfully assign a reviewer', async () => {
-            jest.spyOn(mockReviewRepository, 'findOne').mockResolvedValueOnce(undefined);
+            jest.spyOn(mockReviewRepository, 'findOne').mockResolvedValueOnce(null);
+            jest.spyOn(mockReviewRepository, 'save').mockResolvedValueOnce(mockReview);
             const result = await service.assignReviewer(user, documentId, body);
-            expect(result).toBeDefined();
+            expect(result).toEqual(mockReview);
         });
     });
+
 
     describe('addReviewToDocument', () => {
         const user: UserReq = { id: 'user2', email: 'jack@gmail.com', name: 'Jack', isSuperUser: false };
@@ -95,6 +98,7 @@ describe('ReviewService', () => {
     describe('getMyDocumentReviews', () => {
         const user: UserReq = { id: 'user3', email: 'mina@gmail.com', name: 'Mina', isSuperUser: false };
         const documentId = 'doc1';
+
         const query: PaginationReqDto = { page: 1, limit: 10 };
 
         it('Return paginated review results', async () => {
@@ -102,6 +106,7 @@ describe('ReviewService', () => {
             jest.spyOn(mockReviewRepository, 'count').mockResolvedValueOnce(0);
 
             const result = await service.getMyDocumentReviews(user, query, documentId);
+
             expect(result).toEqual({
                 data: [],
                 page: 1,
