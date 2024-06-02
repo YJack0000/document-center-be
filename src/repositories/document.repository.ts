@@ -3,7 +3,7 @@ import { IDocumentRepository } from 'src/document/document.interface';
 import { BaseRepostitory } from '../common/base.repository';
 import { Document } from 'src/document/document.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, FindManyOptions, Repository } from 'typeorm';
+import { DeepPartial, FindManyOptions, Not, Repository } from 'typeorm';
 import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 
 @Injectable()
@@ -27,7 +27,9 @@ export class DocumentRepository
   }
 
   public async upsert(data: DeepPartial<Document>): Promise<Document> {
-    const existingEntity = await super.findOneById(data.id);
+    const existingEntity = await super.findOneByCondition({
+      where: { id: data.id, status: Not('delete')},
+    });
     if (existingEntity) {
       const updatedEntity = { ...existingEntity, ...data };
       existingEntity.updateAt = new Date();

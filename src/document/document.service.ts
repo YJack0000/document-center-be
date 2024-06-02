@@ -10,7 +10,7 @@ import { Document } from './document.entity';
 import { CreateDocumentDto, UpdateStatusDto } from './dto/document.dto';
 import { HelperService } from 'src/helper/helper.service';
 import { IReviewRepository } from 'src/review/review.interface';
-import { In } from 'typeorm';
+import { In, Not } from 'typeorm';
 import { UserReq } from 'src/strategy/jwt.strategy';
 import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
 
@@ -70,7 +70,7 @@ export class DocumentService {
     });
     const data = await this.documentRepository.findAll({
       relations: ['owner'],
-      where: { ownerId: user.id },
+      where: { ownerId: user.id, status: Not('delete') },
       select: {
         id: true,
         title: true,
@@ -114,7 +114,7 @@ export class DocumentService {
     this.logger.log(`Get Document By Id`);
     return await this.documentRepository.findOne({
       relations: ['owner'],
-      where: { id: documentId },
+      where: { id: documentId, status: Not('delete') },
       select: {
         id: true,
         title: true,
@@ -148,7 +148,14 @@ export class DocumentService {
   async deleteMyDocument(user: UserReq, documentId: string): Promise<void> {
     this.logger.log(`Delete Document`);
     await this.helper.checkOwnership(user, documentId);
-    await this.documentRepository.removeById(documentId);
+    await this.documentRepository.updateOne(
+      {
+        where: { id: documentId },
+      },
+      {
+        status: 'delete',
+      },
+    );
   }
 
   async changeDocumentStatus(
@@ -177,7 +184,9 @@ export class DocumentService {
     } else {
       throw new ForbiddenException('You are not the owner or reviewer');
     }
-    const document = await this.documentRepository.findOneById(documentId);
+    const document = await this.documentRepository.findOne({
+      where: { id: documentId, status: Not('delete') },
+    });
     document.status = status;
     return await this.documentRepository.upsert(document);
   }
@@ -199,7 +208,7 @@ export class DocumentService {
     });
     const data = await this.documentRepository.findAll({
       relations: ['owner'],
-      where: { id: In(documentIds) },
+      where: { id: In(documentIds), status: Not('delete')},
       select: {
         id: true,
         title: true,

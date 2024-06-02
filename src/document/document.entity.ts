@@ -23,7 +23,7 @@ export class Document {
   content: string;
 
   @Column({
-    enum: ['edit', 'review', 'reject', 'pass'],
+    enum: ['edit', 'review', 'reject', 'pass', 'delete'],
   })
   status: string;
 
