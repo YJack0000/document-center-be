@@ -7,6 +7,7 @@ import {
 import { IDocumentRepository } from 'src/document/document.interface';
 import { IReviewRepository } from 'src/review/review.interface';
 import { UserReq } from 'src/strategy/jwt.strategy';
+import { Not } from 'typeorm';
 
 @Injectable()
 export class HelperService {
@@ -34,7 +35,7 @@ export class HelperService {
   ): Promise<string> {
     // Check if the user is the reviewer or the owner of the document
     const reviews = await this.reviewRepository.findAll({
-      where: { documentId: documentId, reviewerId: user.id},
+      where: { documentId: documentId, reviewerId: user.id, status: Not('delete')},
     });
     if (reviews.length == 0) {
       // User is not the reviewer
