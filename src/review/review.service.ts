@@ -175,6 +175,7 @@ export class ReviewService {
           name: true,
         },
       },
+      order: { updatedAt: 'DESC' },
       skip: (page - 1) * limit,
       take: limit,
     });
