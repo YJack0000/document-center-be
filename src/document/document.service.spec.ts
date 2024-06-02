@@ -105,6 +105,11 @@ describe('DocumentService', () => {
 
             expect(foundDocument).toBeUndefined();
         });
+        it('should throw an error if the document to delete is not found', async () => {
+            jest.spyOn(mockDocumentRepository, 'removeById').mockImplementation(async () => { throw new Error('Document not found'); });
+            await expect(service.deleteMyDocument({ id: 'user2' } as any, 'non-existing-doc'))
+                .rejects.toThrow('Document not found');
+        });
     });
 
     describe('getDocumentById', () => {
@@ -119,6 +124,39 @@ describe('DocumentService', () => {
             const retrievedDocument = await service.getDocumentById('doc3');
 
             expect(retrievedDocument).toEqual(document);
+        });
+    });
+
+    describe('changeDocumentStatus', () => {
+        it('should throw an error if the user is neither an owner nor a reviewer', async () => {
+            jest.spyOn(mockHelperService, 'checkIsReviewerOrOwner').mockResolvedValueOnce('none');
+            const statusUpdateDto = { status: 'edit' };
+
+            await expect(service.changeDocumentStatus({ id: 'user1' } as any, 'doc1', statusUpdateDto))
+                .rejects.toThrow('You are not the owner or reviewer');
+        });
+
+    });
+
+    describe('getAllDocuments', () => {
+        it('should return paginated result', async () => {
+            const paginationDto = { page: 1, limit: 5 };
+            jest.spyOn(mockDocumentRepository, 'findAll').mockResolvedValueOnce([new Document()]);
+            jest.spyOn(mockDocumentRepository, 'count').mockResolvedValueOnce(10);
+
+            const result = await service.getAllDocuments(paginationDto);
+            expect(result.data.length).toBe(1);
+            expect(result.totalPage).toBe(2);
+        });
+
+        it('should return empty data if no documents are found', async () => {
+            jest.spyOn(mockDocumentRepository, 'findAll').mockResolvedValueOnce([]);
+            jest.spyOn(mockDocumentRepository, 'count').mockResolvedValueOnce(0);
+
+            const paginationDto = { page: 1, limit: 5 };
+            const result = await service.getAllDocuments(paginationDto);
+            expect(result.data.length).toBe(0);
+            expect(result.totalPage).toBe(0);
         });
     });
 
