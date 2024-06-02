@@ -4,15 +4,42 @@ import {
   DeepPartial,
   FindManyOptions,
   FindOneOptions,
+  Not,
   Repository,
 } from 'typeorm';
-
+interface NotCondition<T> {
+  _type: 'Not';
+  _value: T;
+}
 export class MockDocumentRepository implements IDocumentRepository {
-  async updateOne(
-    filterCondition: FindOneOptions<Document>,
-    updateData: DeepPartial<Document>,
-  ): Promise<Document> {
-    throw new Error('not implemented');
+
+  async findOne(options: FindOneOptions<Document>): Promise<Document> {
+    const id = this.extractId(options.where);
+    const foundDocument = this.documents.find(doc => doc.id === id);
+    if (!foundDocument) {
+      throw new Error('Document not found');
+    }
+    return foundDocument;
+  }
+
+  private extractId(whereCondition: any): string | undefined {
+    if ('id' in whereCondition) {
+      return whereCondition.id;
+    }
+    if (Array.isArray(whereCondition)) {
+      return whereCondition.find(cond => 'id' in cond)?.id;
+    }
+    return whereCondition?.id;
+  }
+
+  async updateOne(filterCondition: FindOneOptions<Document>, updateData: DeepPartial<Document>): Promise<Document> {
+    const documentId = this.extractId(filterCondition.where);
+    const document = this.documents.find(doc => doc.id === documentId);
+    if (document) {
+      Object.assign(document, updateData);
+      return document;
+    }
+    throw new Error('Document not found');
   }
 
   updateMany(
@@ -64,20 +91,7 @@ export class MockDocumentRepository implements IDocumentRepository {
     }
   }
 
-  async findOne(options: FindOneOptions<Document>): Promise<Document | null> {
-    return (
-      this.documents.find((doc) => {
-        let match = true;
-        for (const key in options.where) {
-          if (doc[key] !== options.where[key]) {
-            match = false;
-            break;
-          }
-        }
-        return match;
-      }) || null
-    );
-  }
+
 
   async findOneByCondition(
     filterCondition: FindOneOptions<Document>,
