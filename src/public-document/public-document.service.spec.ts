@@ -12,6 +12,7 @@ import { IDocumentRepository } from 'src/document/document.interface';
 import { UserReq } from 'src/strategy/jwt.strategy';
 import { PaginationResDto } from 'src/common/pagination.dto';
 import { Document } from '../document/document.entity';
+import { CacheModule } from '@nestjs/cache-manager';
 
 describe('PublicDocumentService', () => {
     let service: PublicDocumentService;
@@ -28,6 +29,12 @@ describe('PublicDocumentService', () => {
             ]) // Simulate finding documents
           };
         const module: TestingModule = await Test.createTestingModule({
+            imports: [
+                CacheModule.register({
+                    store: 'memory',
+                    ttl: 600,
+                }),
+            ],
             providers: [
                 PublicDocumentService,
                 { provide: IPublicDocumentRepository, useValue: mockPublicDocumentRepository },

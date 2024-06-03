@@ -8,6 +8,7 @@ import { MockReviewRepository } from 'src/mockRepositories/mockReviewRepo';
 import { Logger } from '@nestjs/common';
 import { HelperService } from 'src/helper/helper.service';
 import { MockHelperService } from 'src/mockRepositories/mockHelperRepo';
+import { CacheModule } from '@nestjs/cache-manager';
 
 describe('DocumentService', () => {
     let service: DocumentService;
@@ -17,6 +18,12 @@ describe('DocumentService', () => {
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
+            imports: [
+                CacheModule.register({
+                    store: 'memory',
+                    ttl: 600,
+                }),
+            ],
             providers: [
                 DocumentService,
                 {
