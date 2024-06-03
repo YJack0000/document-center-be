@@ -13,6 +13,7 @@ import { IReviewRepository } from 'src/review/review.interface';
 import { In, Not } from 'typeorm';
 import { UserReq } from 'src/strategy/jwt.strategy';
 import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class DocumentService {
@@ -21,6 +22,7 @@ export class DocumentService {
     private readonly documentRepository: IDocumentRepository,
     @Inject(IReviewRepository)
     private readonly reviewRepository: IReviewRepository,
+    @Inject('CACHE_MANAGER') private cache: Cache,
     private readonly logger: Logger,
     private readonly helper: HelperService,
   ) {
@@ -32,6 +34,11 @@ export class DocumentService {
   ): Promise<PaginationResDto<Document>> {
     this.logger.log(`Get All Documents`);
     const { page, limit } = query;
+    const cachKey = `allDocuments-${page}-${limit}`;
+    const cacheData = await this.cache.get<PaginationResDto<Document>>(cachKey);
+    if (cacheData) {
+      return cacheData;
+    }
     const totalAmount = await this.documentRepository.count();
     const data = await this.documentRepository.findAll({
       relations: ['owner'],
@@ -50,13 +57,14 @@ export class DocumentService {
       skip: (page - 1) * limit,
       take: limit,
     });
-
-    return {
+    const result = {
       data,
       page: Number(page),
       limit: Number(limit),
       totalPage: Math.ceil(totalAmount / limit),
     };
+    await this.cache.set(cachKey, result);
+    return result;
   }
 
   async getMyDocuments(
@@ -65,6 +73,11 @@ export class DocumentService {
   ): Promise<PaginationResDto<Document>> {
     this.logger.log(`Get My Documents`);
     const { page, limit } = query;
+    const cachKey = `myDocuments-${user.id}-${page}-${limit}`;
+    const cacheData = await this.cache.get<PaginationResDto<Document>>(cachKey);
+    if (cacheData) {
+      return cacheData;
+    }
     const totalAmount = await this.documentRepository.count({
       where: { ownerId: user.id },
     });
@@ -86,13 +99,14 @@ export class DocumentService {
       skip: (page - 1) * limit,
       take: limit,
     });
-
-    return {
+    const result = {
       data,
       page: Number(page),
       limit: Number(limit),
       totalPage: Math.ceil(totalAmount / limit),
     };
+    await this.cache.set(cachKey, result);
+    return result;
   }
 
   async createDocument(
@@ -112,7 +126,12 @@ export class DocumentService {
 
   async getDocumentById(documentId: string): Promise<Document> {
     this.logger.log(`Get Document By Id`);
-    return await this.documentRepository.findOne({
+    const cachKey = `document-${documentId}`;
+    const cacheData = await this.cache.get<Document>(cachKey);
+    if (cacheData) {
+      return cacheData;
+    }
+    const result =  await this.documentRepository.findOne({
       relations: ['owner'],
       where: { id: documentId, status: Not('delete') },
       select: {
@@ -128,6 +147,8 @@ export class DocumentService {
         },
       },
     });
+    await this.cache.set(cachKey, result);
+    return result;
   }
 
   async updateMyDocument(
@@ -158,45 +179,17 @@ export class DocumentService {
     );
   }
 
-  async changeDocumentStatus(
-    user: UserReq,
-    documentId: string,
-    body: UpdateStatusDto,
-  ): Promise<Document> {
-    this.logger.log(`Change Document Status`);
-    const { status } = body;
-    const role = await this.helper.checkIsReviewerOrOwner(user, documentId);
-    let statusList = [];
-    if (role === 'owner') {
-      statusList = ['edit', 'review'];
-      if (!statusList.includes(status)) {
-        throw new BadRequestException(
-          'Owner can only change status to edit or review',
-        );
-      }
-    } else if (role === 'reviewer') {
-      statusList = ['pass', 'reject'];
-      if (!statusList.includes(status)) {
-        throw new BadRequestException(
-          'Reviewer can only change status to pass or reject',
-        );
-      }
-    } else {
-      throw new ForbiddenException('You are not the owner or reviewer');
-    }
-    const document = await this.documentRepository.findOne({
-      where: { id: documentId, status: Not('delete') },
-    });
-    document.status = status;
-    return await this.documentRepository.upsert(document);
-  }
-
   async getDocumentsAssignedToMe(
     user: UserReq,
     query: PaginationReqDto,
   ): Promise<PaginationResDto<Document>> {
     this.logger.log(`Get Documents Assigned To Me`);
     const { page, limit } = query;
+    const cachKey = `assignedDocuments-${user.id}-${page}-${limit}`;
+    const cacheData = await this.cache.get<PaginationResDto<Document>>(cachKey);
+    if (cacheData) {
+      return cacheData;
+    }
     const myReviews = await this.reviewRepository.findAll({
       where: { reviewerId: user.id },
     });
@@ -208,7 +201,7 @@ export class DocumentService {
     });
     const data = await this.documentRepository.findAll({
       relations: ['owner'],
-      where: { id: In(documentIds), status: Not('delete')},
+      where: { id: In(documentIds), status: Not('delete') },
       select: {
         id: true,
         title: true,
@@ -225,11 +218,13 @@ export class DocumentService {
       take: limit,
     });
 
-    return {
+    const result = {
       data,
       page: Number(page),
       limit: Number(limit),
       totalPage: Math.ceil(totalAmount / limit),
     };
+    await this.cache.set(cachKey, result);
+    return result;
   }
 }

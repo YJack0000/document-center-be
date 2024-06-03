@@ -21,6 +21,9 @@ import { MinioService } from './minio/minio.service';
 import { UploadImageModule } from './upload-image/upload-image.module';
 import { MinioModule } from './minio/minio.module';
 import { MailerModule } from 'nestjs-mailer';
+import { CacheModule } from '@nestjs/cache-manager';
+import { RedisClientOptions } from 'redis';
+import { redisStore } from 'cache-manager-redis-yet';
 
 @Module({
   imports: [
@@ -58,6 +61,12 @@ import { MailerModule } from 'nestjs-mailer';
           },
         },
       },
+    }),
+    CacheModule.register({
+      isGlobal: true,
+      store: redisStore,
+      host: process.env.REDIS_HOST,
+      ttl: 10 * 1000,
     }),
     DocumentModule,
     AuthModule,

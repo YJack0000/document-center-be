@@ -6,6 +6,7 @@ import { PublicDocument } from './public-document.entity';
 import { UpdatePublicDocumentStatusDto } from './dto/public-document.dto';
 import { UserReq } from 'src/strategy/jwt.strategy';
 import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class PublicDocumentService {
@@ -14,6 +15,7 @@ export class PublicDocumentService {
     private readonly publicDocumentRepository: IPublicDocumentRepository,
     @Inject(IDocumentRepository)
     private readonly documentRepository: IDocumentRepository,
+    @Inject('CACHE_MANAGER') private cache: Cache,
     private readonly logger: Logger,
     private readonly helper: HelperService,
   ) {
@@ -37,6 +39,12 @@ export class PublicDocumentService {
     query: PaginationReqDto,
   ): Promise<PaginationResDto<PublicDocument>> {
     const { page, limit } = query;
+    const cachKey = `allPublicDocuments-${page}-${limit}`;
+    const cacheData =
+      await this.cache.get<PaginationResDto<PublicDocument>>(cachKey);
+    if (cacheData) {
+      return cacheData;
+    }
     const totalAmount = await this.publicDocumentRepository.count();
     const data = await this.publicDocumentRepository.findAll({
       relations: ['owner'],
@@ -54,12 +62,14 @@ export class PublicDocumentService {
       take: limit,
     });
 
-    return {
+    const result = {
       data,
       page: Number(page),
       limit: Number(limit),
       totalPage: Math.ceil(totalAmount / limit),
     };
+    await this.cache.set(cachKey, result);
+    return result;
   }
 
   async getPublicDocumentsByUserId(
@@ -67,6 +77,12 @@ export class PublicDocumentService {
     query: PaginationReqDto,
   ): Promise<PaginationResDto<PublicDocument>> {
     const { page, limit } = query;
+    const cachKey = `publicDocuments-${userId}-${page}-${limit}`;
+    const cacheData =
+      await this.cache.get<PaginationResDto<PublicDocument>>(cachKey);
+    if (cacheData) {
+      return cacheData;
+    }
     const totalAmount = await this.publicDocumentRepository.count({
       where: { ownerId: userId },
     });
@@ -87,17 +103,19 @@ export class PublicDocumentService {
       take: limit,
     });
 
-    return {
+    const result = {
       data,
       page: Number(page),
       limit: Number(limit),
       totalPage: Math.ceil(totalAmount / limit),
     };
+    await this.cache.set(cachKey, result);
+    return result;
   }
 
   private async publishDocument(documentId: string): Promise<PublicDocument> {
     const document = await this.documentRepository.findOne({
-      where: { id: documentId, status: 'pass'},
+      where: { id: documentId, status: 'pass' },
     });
     if (!document) {
       throw new NotFoundException('Document not found or not pass review');

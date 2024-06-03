@@ -94,22 +94,6 @@ export class DocumentController {
     return res.status(HttpStatus.NO_CONTENT).send();
   }
 
-  @Put('/status/:documentId')
-  @UseGuards(JwtAuthGuard, UserGuard)
-  async changeDocumentStatus(
-    @Req() req,
-    @Param('documentId') documentId: string,
-    @Body() body: UpdateStatusDto,
-    @Res() res,
-  ) {
-    const result = await this.documentService.changeDocumentStatus(
-      req.user,
-      documentId,
-      body,
-    );
-    return res.status(HttpStatus.OK).json(result);
-  }
-
   @Get('/assigned/me')
   @UseGuards(JwtAuthGuard, UserGuard)
   async getDocumentsAssignedToMe(
