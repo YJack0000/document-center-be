@@ -9,9 +9,10 @@ import { HelperModule } from 'src/helper/helper.module';
 import { IUserRepository } from 'src/users/user.interface';
 import { UserRepository } from 'src/repositories/user.repository';
 import { User } from 'src/users/user.entity';
+import { MailerModule } from 'nestjs-mailer';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Review, User]), HelperModule],
+  imports: [TypeOrmModule.forFeature([Review, User]), HelperModule, MailerModule],
   providers: [
     ReviewService,
     {

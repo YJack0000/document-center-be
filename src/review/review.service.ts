@@ -13,6 +13,7 @@ import { HelperService } from 'src/helper/helper.service';
 import { IUserRepository } from 'src/users/user.interface';
 import { UserReq } from 'src/strategy/jwt.strategy';
 import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
+import { InjectMailer, Mailer } from 'nestjs-mailer';
 
 @Injectable()
 export class ReviewService {
@@ -20,6 +21,7 @@ export class ReviewService {
     @Inject(IUserRepository) private readonly authRepository: IUserRepository,
     @Inject(IReviewRepository)
     private readonly reviewRepository: IReviewRepository,
+    @InjectMailer() private readonly mailer: Mailer,
     private readonly logger: Logger,
     private readonly helper: HelperService,
   ) {
@@ -72,6 +74,14 @@ export class ReviewService {
       throw new ForbiddenException('Reviewer already assigned');
     }
     await this.helper.changeDocumentStatus(documentId, 'review');
+
+    // send email to reviewer
+    await this.mailer.sendMail({
+      from: process.env.EMAIL_USER,
+      to: reviewer.email,
+      subject: 'Review Document',
+      text: `You have been assigned to review a document`,
+    });
     return await this.reviewRepository.save(reviewData);
   }
 
@@ -82,7 +92,7 @@ export class ReviewService {
       throw new ForbiddenException('Owner cannot pass the review');
     }
     await this.helper.changeDocumentStatus(documentId, 'pass');
-    return await this.reviewRepository.updateOne(
+    const result =  await this.reviewRepository.updateOne(
       {
         where: { documentId: documentId, reviewerId: user.id, status: 'wait' },
       },

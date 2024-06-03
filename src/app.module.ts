@@ -20,6 +20,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { MinioService } from './minio/minio.service';
 import { UploadImageModule } from './upload-image/upload-image.module';
 import { MinioModule } from './minio/minio.module';
+import { MailerModule } from 'nestjs-mailer';
 
 @Module({
   imports: [
@@ -46,6 +47,18 @@ import { MinioModule } from './minio/minio.module';
     MulterModule.register({
       dest: './uploads',
     }),
+    MailerModule.forRoot({
+      config: {
+        transport: {
+          host: process.env.EMAIL_HOST,
+          port: process.env.EMAIL_PORT,
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+          },
+        },
+      },
+    }),
     DocumentModule,
     AuthModule,
     ReviewModule,
@@ -57,9 +70,6 @@ import { MinioModule } from './minio/minio.module';
     MinioModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService, 
-    MinioService
-  ],
+  providers: [AppService, MinioService],
 })
 export class AppModule {}
