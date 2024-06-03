@@ -7,6 +7,7 @@ import {
 import { IDocumentRepository } from 'src/document/document.interface';
 import { IReviewRepository } from 'src/review/review.interface';
 import { UserReq } from 'src/strategy/jwt.strategy';
+import { Not } from 'typeorm';
 
 @Injectable()
 export class HelperService {
@@ -20,11 +21,13 @@ export class HelperService {
   async checkOwnership(user: UserReq, documentId: string) {
     // Check if the document exists and belongs to the user
     const document = await this.documentRepository.findOneById(documentId);
-    if (!document || document.ownerId !== user.id) {
+    if (!document) {
+      // Document not found
+      throw new NotFoundException('Document not found');
+    }
+    if (document.ownerId !== user.id && !user.isSuperUser) {
       // Document not found or does not belong to the user
-      throw new ForbiddenException(
-        'Document not found or does not belong to you',
-      );
+      throw new ForbiddenException('Document does not belong to you');
     }
   }
 
@@ -34,7 +37,7 @@ export class HelperService {
   ): Promise<string> {
     // Check if the user is the reviewer or the owner of the document
     const reviews = await this.reviewRepository.findAll({
-      where: { documentId: documentId, reviewerId: user.id},
+      where: { documentId: documentId, reviewerId: user.id, status: Not('delete')},
     });
     if (reviews.length == 0) {
       // User is not the reviewer

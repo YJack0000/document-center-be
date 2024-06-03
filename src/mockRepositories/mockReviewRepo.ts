@@ -7,7 +7,7 @@ export class MockReviewRepository {
     async upsert(data: DeepPartial<Review>): Promise<Review> {
         const index = this.reviews.findIndex(r => r.documentId === data.documentId && r.reviewerId === data.reviewerId);
         if (index !== -1) {
-            this.reviews[index] = { ...this.reviews[index], ...data } as Review;
+            Object.assign(this.reviews[index], data);
             return this.reviews[index];
         }
         const newReview = new Review();
@@ -39,4 +39,8 @@ export class MockReviewRepository {
     async findAll(options: any): Promise<Review[]> {
         return this.reviews.filter(r => r.documentId === options.where.documentId).slice(options.skip, options.take + options.skip);
     }
+    async findReviewsByDocumentId(documentId: string): Promise<Review[]> {
+        return this.reviews.filter(review => review.documentId === documentId);
+    }
+
 }
