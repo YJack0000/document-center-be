@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: document-center-be
-        image: yjack0000cs12/document-center-be:v131
+        image: yjack0000cs12/document-center-be:v135
         ports:
         - containerPort: 3000
         envFrom:
@@ -38,6 +38,32 @@ spec:
             port: 3000
           initialDelaySeconds: 30
           periodSeconds: 10
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+  namespace: document-center
+spec:
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:latest
+        ports:
+        - containerPort: 6379
+        command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
 
 ---
 apiVersion: v1

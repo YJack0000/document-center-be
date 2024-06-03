@@ -115,6 +115,11 @@ describe('DocumentService', () => {
 
             expect(foundDocument.status).toBe('delete');
         });
+        it('should throw an error if the document to delete is not found', async () => {
+            jest.spyOn(mockDocumentRepository, 'removeById').mockImplementation(async () => { throw new Error('Document not found'); });
+            await expect(service.deleteMyDocument({ id: 'user2' } as any, 'non-existing-doc'))
+                .rejects.toThrow('Document not found');
+        });
     });
     describe('getDocumentById', () => {
         it('Return a document by ID', async () => {
@@ -129,6 +134,7 @@ describe('DocumentService', () => {
 
             expect(retrievedDocument).toEqual(document);
         });
+
 
         it('Throws error if document is not found', async () => {
             await expect(service.getDocumentById('nonexistent'))

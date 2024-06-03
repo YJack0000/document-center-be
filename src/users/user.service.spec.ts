@@ -3,6 +3,7 @@ import { Logger } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { IUserRepository } from './user.interface';
 import { MockUserRepository } from '../mockRepositories/mockUserRepo';
+import { User } from './user.entity';
 
 describe('UsersService', () => {
     let service: UsersService;
@@ -16,16 +17,7 @@ describe('UsersService', () => {
                     provide: IUserRepository,
                     useClass: MockUserRepository,
                 },
-                {
-                    provide: Logger,
-                    useValue: {
-                        log: jest.fn(),
-                        error: jest.fn(),
-                        warn: jest.fn(),
-                        debug: jest.fn(),
-                        verbose: jest.fn(),
-                    },
-                },
+                Logger,
             ],
         }).compile();
 
@@ -41,7 +33,9 @@ describe('UsersService', () => {
     it('should return all users', async () => {
         const result = await service.getAllUsers({ page: 1, limit: 10 });
         expect(result.data.length).toBe(10);
-        expect(result.totalPage).toBe(1);
+
+        expect(result.totalPage).toBe(1); 
+
     });
 
     it('should return a user by ID', async () => {

@@ -10,6 +10,20 @@ spec:
     targetPort: 3000
   selector:
     app: document-center-be
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: document-center
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+  selector:
+    app: redis
 
 ---
 apiVersion: v1

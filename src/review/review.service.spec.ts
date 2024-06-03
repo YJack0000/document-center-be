@@ -87,6 +87,31 @@ describe('ReviewService', () => {
             const result = await service.assignReviewer(user, documentId, body);
             expect(result).toEqual(mockReview);
         });
+        it('Throws error if ownership check fails', async () => {
+            jest.spyOn(mockHelperService, 'checkOwnership').mockRejectedValue(new ForbiddenException());
+
+            await expect(service.assignReviewer(user, documentId, body))
+                .rejects.toThrow(ForbiddenException);
+        });
+        it('Throws error if there is already an existing review in "wait" status', async () => {
+            jest.spyOn(mockReviewRepository, 'findOne').mockResolvedValueOnce(new Review());
+
+            await expect(service.assignReviewer(user, documentId, body))
+                .rejects.toThrow(new ForbiddenException('Reviewer already assigned'));
+        });
+        it('Throws error if there is already an existing review in "wait" status', async () => {
+            jest.spyOn(mockReviewRepository, 'findOne').mockResolvedValueOnce(new Review());
+
+            await expect(service.assignReviewer(user, documentId, body))
+                .rejects.toThrow(new ForbiddenException('Reviewer already assigned'));
+        });
+
+        it('Throws error if owner tries to pass review', async () => {
+            jest.spyOn(mockHelperService, 'checkIsReviewerOrOwner').mockResolvedValue('owner');
+
+            await expect(service.passReview(user, documentId, { comment: 'Looks good' }))
+                .rejects.toThrow(new ForbiddenException('Owner cannot pass the review'));
+        });
     });
 
     describe('getMyReviews', () => {
@@ -104,5 +129,6 @@ describe('ReviewService', () => {
                 totalPage: 0,
             });
         });
+
     });
 });
