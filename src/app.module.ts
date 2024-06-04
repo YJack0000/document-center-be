@@ -69,7 +69,6 @@ import { redisStore } from 'cache-manager-redis-yet';
         host: process.env.REDIS_HOST,
         port: 6379,
       },
-      host: 'redis-service',
       ttl: 10 * 1000,
     }),
     DocumentModule,

@@ -22,9 +22,6 @@ spec:
         envFrom:
         - secretRef:
             name: document-center-be-secrets
-        env: #  temp use force to set env
-          - name: REDIS_HOST
-            value: redis-service
         resources:
           limits:
             cpu: "500m"
