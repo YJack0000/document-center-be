@@ -65,7 +65,7 @@ import { redisStore } from 'cache-manager-redis-yet';
     CacheModule.register({
       isGlobal: true,
       store: redisStore,
-      host: process.env.REDIS_HOST,
+      host: 'redis-service',
       ttl: 10 * 1000,
     }),
     DocumentModule,
