@@ -66,11 +66,11 @@ describe('UploadImageService', () => {
             const imageUrl = 'http://example.com/test.jpg';
             const expectedResult = 'http://example.com/test.jpg';
             mockUploadImageRepo.getImageUrl.mockResolvedValue(imageUrl);
-            mockMinioRepo.getFileUrl.mockResolvedValue(expectedResult);
+            mockMinioRepo.getFileStream.mockResolvedValue(expectedResult);
 
-            const result = await service.getImageUrl(imageUrl);
+            const result = await service.getImageStream(imageUrl);
 
-            expect(mockMinioRepo.getFileUrl).toHaveBeenCalledWith(imageUrl);
+            expect(mockMinioRepo.getFileStream).toHaveBeenCalledWith(imageUrl);
             expect(result).toBe(expectedResult);
         });
     });

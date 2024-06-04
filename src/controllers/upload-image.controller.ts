@@ -20,7 +20,7 @@ export class UploadImageController {
   constructor(private readonly uploadImageService: UploadImageService) {}
 
   @Post()
-  // @UseGuards(JwtAuthGuard, UserGuard)
+  @UseGuards(JwtAuthGuard, UserGuard)
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(@UploadedFile() file: Express.Multer.File, @Res() res) {
     const fileName = await this.uploadImageService.uploadImage(file);
@@ -28,8 +28,8 @@ export class UploadImageController {
   }
 
   @Get('/:fileName')
-  // @UseGuards(JwtAuthGuard, UserGuard)
-  async getImageUrl(@Param('fileName') fileName: string, @Res() res) {
+  @UseGuards(JwtAuthGuard, UserGuard)
+  async getImageStream(@Param('fileName') fileName: string, @Res() res) {
     const stream = await this.uploadImageService.getImageStream(fileName);
     stream.pipe(res);
   }
