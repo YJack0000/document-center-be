@@ -1,3 +1,4 @@
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { DocumentService } from './document.service';
 import { IDocumentRepository } from './document.interface';
@@ -9,6 +10,9 @@ import { Logger } from '@nestjs/common';
 import { HelperService } from 'src/helper/helper.service';
 import { MockHelperService } from 'src/mockRepositories/mockHelperRepo';
 import { CacheModule } from '@nestjs/cache-manager';
+import { PaginationReqDto } from 'src/common/pagination.dto';
+import { UserReq } from 'src/strategy/jwt.strategy';
+import { UpdateStatusDto } from './dto/document.dto';
 
 describe('DocumentService', () => {
     let service: DocumentService;
@@ -148,4 +152,45 @@ describe('DocumentService', () => {
                 .rejects.toThrow('Document not found');
         });
     });
+    describe('getAllDocuments', () => {
+        it('Successfully get all documents with pagination', async () => {
+            const paginationDto = new PaginationReqDto();
+            paginationDto.page = 1;
+            paginationDto.limit = 10;
+            const result = await service.getAllDocuments(paginationDto);
+            expect(result.data).toBeInstanceOf(Array);
+            expect(result.page).toEqual(paginationDto.page);
+            expect(result.limit).toEqual(paginationDto.limit);
+            expect(result.totalPage).toBeDefined();
+        });
+    });
+
+    describe('getMyDocuments', () => {
+        it('Successfully get my documents with pagination', async () => {
+            const userReq: UserReq = { id: 'user1', email: 'test@gmail.com', name: 'Test User', isSuperUser: false };
+            const paginationDto = new PaginationReqDto();
+            paginationDto.page = 1;
+            paginationDto.limit = 10;
+            const result = await service.getMyDocuments(userReq, paginationDto);
+            expect(result.data).toBeInstanceOf(Array);
+            expect(result.page).toEqual(paginationDto.page);
+            expect(result.limit).toEqual(paginationDto.limit);
+            expect(result.totalPage).toBeDefined();
+        });
+    });
+
+    describe('getDocumentsAssignedToMe', () => {
+        it('Successfully get documents assigned to me with pagination', async () => {
+            const userReq: UserReq = { id: 'user1', email: 'test@gmail..com', name: 'Test User', isSuperUser: false };
+            const paginationDto = new PaginationReqDto();
+            paginationDto.page = 1;
+            paginationDto.limit = 10;
+            const result = await service.getDocumentsAssignedToMe(userReq, paginationDto);
+            expect(result.data).toBeInstanceOf(Array);
+            expect(result.page).toEqual(paginationDto.page);
+            expect(result.limit).toEqual(paginationDto.limit);
+            expect(result.totalPage).toBeDefined();
+        });
+    });
+
 });
