@@ -191,7 +191,7 @@ export class DocumentService {
       return cacheData;
     }
     const myReviews = await this.reviewRepository.findAll({
-      where: { reviewerId: user.id },
+      where: { reviewerId: user.id, status: 'wait'},
     });
     // Get document ids set from reviews
     const documentIds = myReviews.map((review) => review.documentId);
