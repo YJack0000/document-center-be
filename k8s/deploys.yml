@@ -145,9 +145,13 @@ spec:
       containers:
       - name: minio
         image: minio/minio
-        args: ["server", "/data"]
+        args: 
+          - server
+          - /data
+          - --console-address=:9001
         ports:
         - containerPort: 9000
+        - containerPort: 9001
         envFrom:
         - secretRef:
             name: minio-secrets
