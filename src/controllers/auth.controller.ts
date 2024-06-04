@@ -49,4 +49,12 @@ export class AuthController {
       .cookie('access_token', token)
       .redirect(baseUrl);
   }
+
+  @Get('logout')
+  async logout(@Res() res: Response) {
+    return res
+      .status(HttpStatus.OK)
+      .clearCookie('access_token')
+      .redirect(process.env.BASE_URL.replace('/api', ''));
+  }
 }
