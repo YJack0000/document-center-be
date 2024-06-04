@@ -9,6 +9,7 @@ import { Logger } from '@nestjs/common';
 import { HelperService } from 'src/helper/helper.service';
 import { MockHelperService } from 'src/mockRepositories/mockHelperRepo';
 import { CacheModule } from '@nestjs/cache-manager';
+import { IPublicDocumentRepository } from 'src/public-document/public-document.interface';
 
 describe('DocumentService', () => {
     let service: DocumentService;
@@ -33,6 +34,10 @@ describe('DocumentService', () => {
                 {
                     provide: IReviewRepository,
                     useValue: new MockReviewRepository() as unknown as IReviewRepository,
+                },
+                {
+                    provide: IPublicDocumentRepository,
+                    useValue: new MockReviewRepository() as unknown as IPublicDocumentRepository,
                 },
                 {
                     provide: Logger,

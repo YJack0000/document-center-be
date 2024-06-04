@@ -5,6 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { IDocumentRepository } from 'src/document/document.interface';
+import { PublicDocument } from 'src/public-document/public-document.entity';
+import { IPublicDocumentRepository } from 'src/public-document/public-document.interface';
 import { IReviewRepository } from 'src/review/review.interface';
 import { UserReq } from 'src/strategy/jwt.strategy';
 import { Not } from 'typeorm';
@@ -16,6 +18,8 @@ export class HelperService {
     private readonly documentRepository: IDocumentRepository,
     @Inject(IReviewRepository)
     private readonly reviewRepository: IReviewRepository,
+    @Inject(IPublicDocumentRepository)
+    private readonly publicDocumentRepository: IPublicDocumentRepository,
   ) {}
 
   async checkOwnership(user: UserReq, documentId: string) {
@@ -37,7 +41,11 @@ export class HelperService {
   ): Promise<string> {
     // Check if the user is the reviewer or the owner of the document
     const reviews = await this.reviewRepository.findAll({
-      where: { documentId: documentId, reviewerId: user.id, status: Not('delete')},
+      where: {
+        documentId: documentId,
+        reviewerId: user.id,
+        status: Not('delete'),
+      },
     });
     if (reviews.length == 0) {
       // User is not the reviewer
@@ -59,5 +67,28 @@ export class HelperService {
       id: documentId,
       status: status,
     });
+  }
+
+  async publishDocument(documentId: string): Promise<PublicDocument> {
+    const document = await this.documentRepository.findOne({
+      where: { id: documentId, status: 'pass' },
+    });
+    if (!document) {
+      throw new NotFoundException('Document not found or not pass review');
+    }
+    const publicDocument = this.publicDocumentRepository.create(document);
+    publicDocument.isPublic = true;
+    return await this.publicDocumentRepository.upsert(publicDocument);
+  }
+
+  async unpublishDocument(documentId: string): Promise<PublicDocument> {
+    const publicDocument =
+      await this.publicDocumentRepository.findOneById(documentId);
+    if (!publicDocument) {
+      throw new NotFoundException('Public document not found');
+    }
+    // update isPublic to false
+    publicDocument.isPublic = false;
+    return await this.publicDocumentRepository.upsert(publicDocument);
   }
 }

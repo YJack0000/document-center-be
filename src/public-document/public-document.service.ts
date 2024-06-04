@@ -30,9 +30,9 @@ export class PublicDocumentService {
     await this.helper.checkOwnership(user, documentId);
     const { isPublic } = body;
     if (!isPublic) {
-      return await this.unpublishDocument(documentId);
+      return await this.helper.unpublishDocument(documentId);
     }
-    return await this.publishDocument(documentId);
+    return await this.helper.publishDocument(documentId);
   }
 
   async getAllPublicDocuments(
@@ -53,6 +53,7 @@ export class PublicDocumentService {
         title: true,
         content: true,
         updateAt: true,
+        isPublic: true,
         owner: {
           id: true,
           name: true,
@@ -94,6 +95,7 @@ export class PublicDocumentService {
         title: true,
         content: true,
         updateAt: true,
+        isPublic: true,
         owner: {
           id: true,
           name: true,
@@ -113,23 +115,4 @@ export class PublicDocumentService {
     return result;
   }
 
-  private async publishDocument(documentId: string): Promise<PublicDocument> {
-    const document = await this.documentRepository.findOne({
-      where: { id: documentId, status: 'pass' },
-    });
-    if (!document) {
-      throw new NotFoundException('Document not found or not pass review');
-    }
-    const publicDocument = this.publicDocumentRepository.create(document);
-    return await this.publicDocumentRepository.save(publicDocument);
-  }
-
-  private async unpublishDocument(documentId: string): Promise<PublicDocument> {
-    const publicDocument =
-      await this.publicDocumentRepository.findOneById(documentId);
-    if (!publicDocument) {
-      throw new NotFoundException('Public document not found');
-    }
-    return await this.publicDocumentRepository.removeById(documentId);
-  }
 }

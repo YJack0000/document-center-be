@@ -32,6 +32,20 @@ export class PublicDocumentController {
     return res.status(HttpStatus.OK).json(result);
   }
 
+  @Get("/me")
+  @UseGuards(JwtAuthGuard, UserGuard)
+  async getMyPublicDocuments(
+    @Req() req,
+    @Query(new ValidationPipe({ transform: true })) query: PaginationReqDto,
+    @Res() res,
+  ): Promise<PaginationResDto<PublicDocument>> {
+    const result = await this.publicDocumentService.getPublicDocumentsByUserId(
+      req.user.id,
+      query,
+    );
+    return res.status(HttpStatus.OK).json(result);
+  }
+
   @Get('/:userId')
   async getPublicDocumentsByUserId(
     @Param('userId') userId: string,

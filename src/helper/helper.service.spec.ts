@@ -5,6 +5,7 @@ import { IDocumentRepository } from '../document/document.interface';
 import { IReviewRepository } from '../review/review.interface';
 import { MockReviewRepository } from 'src/mockRepositories/mockReviewRepo';
 import { MockDocumentRepository } from '../mockRepositories/mockDocumentRepo';
+import { IPublicDocumentRepository } from 'src/public-document/public-document.interface';
 
 describe('HelperService', () => {
     let service: HelperService;
@@ -23,6 +24,9 @@ describe('HelperService', () => {
                     provide: IReviewRepository,
                     useClass: MockReviewRepository
                 },
+                {
+                    provide: IPublicDocumentRepository,
+                    useValue: new MockReviewRepository() as unknown as IPublicDocumentRepository,                },
                 {
                     provide: HelperService,
                     useClass: MockHelperService

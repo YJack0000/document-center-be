@@ -92,7 +92,7 @@ export class ReviewService {
       throw new ForbiddenException('Owner cannot pass the review');
     }
     await this.helper.changeDocumentStatus(documentId, 'pass');
-    const result =  await this.reviewRepository.updateOne(
+    const result = await this.reviewRepository.updateOne(
       {
         where: { documentId: documentId, reviewerId: user.id, status: 'wait' },
       },
@@ -102,6 +102,10 @@ export class ReviewService {
         updatedAt: new Date(),
       },
     );
+    // send email to owner
+
+    // publish document
+    await this.helper.publishDocument(documentId);
   }
 
   async rejectReview(user: UserReq, documentId: string, body: CreateReviewDto) {
@@ -111,6 +115,8 @@ export class ReviewService {
       throw new ForbiddenException('Owner cannot reject the review');
     }
     await this.helper.changeDocumentStatus(documentId, 'edit');
+    // send email to owner
+
     return await this.reviewRepository.updateOne(
       {
         where: { documentId: documentId, reviewerId: user.id, status: 'wait' },
