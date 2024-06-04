@@ -14,7 +14,8 @@ import {
 import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 import { UserGuard } from 'src/guard/user.guard';
-import { UpdatePublicDocumentStatusDto } from 'src/public-document/dto/public-document.dto';
+import { UpdatePublicDocumentStatusDto } from 'src/public-document/public-document.dto';
+import { PublicDocumentQueryDto } from 'src/public-document/public-document.dto';
 import { PublicDocument } from 'src/public-document/public-document.entity';
 import { PublicDocumentService } from 'src/public-document/public-document.service';
 
@@ -24,7 +25,7 @@ export class PublicDocumentController {
 
   @Get('/all')
   async getAllPublicDocuments(
-    @Query(new ValidationPipe({ transform: true })) query: PaginationReqDto,
+    @Query(new ValidationPipe({ transform: true })) query: PublicDocumentQueryDto,
     @Res() res,
   ): Promise<PaginationResDto<PublicDocument>> {
     const result =

@@ -7,10 +7,14 @@ import {
 } from '@nestjs/common';
 import { IDocumentRepository } from './document.interface';
 import { Document } from './document.entity';
-import { CreateDocumentDto, UpdateStatusDto } from './dto/document.dto';
+import {
+  CreateDocumentDto,
+  DocumentQueryDto,
+  UpdateStatusDto,
+} from './document.dto';
 import { HelperService } from 'src/helper/helper.service';
 import { IReviewRepository } from 'src/review/review.interface';
-import { In, Not } from 'typeorm';
+import { In, Like, Not } from 'typeorm';
 import { UserReq } from 'src/strategy/jwt.strategy';
 import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
 import { Cache } from 'cache-manager';
@@ -30,18 +34,28 @@ export class DocumentService {
   }
 
   async getAllDocuments(
-    query: PaginationReqDto,
+    query: DocumentQueryDto,
   ): Promise<PaginationResDto<Document>> {
     this.logger.log(`Get All Documents`);
-    const { page, limit } = query;
+    const { search, page, limit } = query;
     const cachKey = `allDocuments-${page}-${limit}`;
-    const cacheData = await this.cache.get<PaginationResDto<Document>>(cachKey);
-    if (cacheData) {
-      return cacheData;
+    if (!search) {
+      const cacheData =
+        await this.cache.get<PaginationResDto<Document>>(cachKey);
+      if (cacheData) {
+        return cacheData;
+      }
+    }
+    let filter = {};
+    if (search) {
+      filter = {
+        title: Like(`%${search}%`),
+      };
     }
     const totalAmount = await this.documentRepository.count();
     const data = await this.documentRepository.findAll({
       relations: ['owner'],
+      where: filter,
       select: {
         id: true,
         title: true,
@@ -63,7 +77,8 @@ export class DocumentService {
       limit: Number(limit),
       totalPage: Math.ceil(totalAmount / limit),
     };
-    await this.cache.set(cachKey, result);
+    if (!search) await this.cache.set(cachKey, result);
+
     return result;
   }
 
@@ -131,7 +146,7 @@ export class DocumentService {
     if (cacheData) {
       return cacheData;
     }
-    const result =  await this.documentRepository.findOne({
+    const result = await this.documentRepository.findOne({
       relations: ['owner'],
       where: { id: documentId, status: Not('delete') },
       select: {
@@ -191,7 +206,7 @@ export class DocumentService {
       return cacheData;
     }
     const myReviews = await this.reviewRepository.findAll({
-      where: { reviewerId: user.id, status: 'wait'},
+      where: { reviewerId: user.id, status: 'wait' },
     });
     // Get document ids set from reviews
     const documentIds = myReviews.map((review) => review.documentId);
