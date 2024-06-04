@@ -10,8 +10,8 @@ export class UploadImageService {
     return await this.minio.uploadFile(file);
   }
 
-  async getImageUrl(fileName: string) {
-    return await this.minio.getFileUrl(fileName);
+  async getImageStream(fileName: string) {
+    return await this.minio.getFileStream(fileName);
   }
 
   async deleteImage(fileName: string) {
