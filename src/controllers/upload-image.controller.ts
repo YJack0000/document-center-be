@@ -32,7 +32,7 @@ export class UploadImageController {
   @UseGuards(JwtAuthGuard, UserGuard)
   async getImageUrl(@Param('fileName') fileName: string, @Res() res) {
     const url = await this.uploadImageService.getImageUrl(fileName);
-    return res.status(HttpStatus.OK).json({ url });
+    return res.status(HttpStatus.OK).send(url);
   }
 
   @Delete('/:fileName')
