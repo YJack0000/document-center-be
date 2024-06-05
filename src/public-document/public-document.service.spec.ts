@@ -2,16 +2,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PublicDocumentService } from './public-document.service';
 import { PublicDocument } from './public-document.entity';
-import { mockPublicDocumentRepository } from '../mockRepositories/mockPublicDocument';
 import { IPublicDocumentRepository } from './public-document.interface';
 import { PaginationReqDto } from 'src/common/pagination.dto';
 import { Logger } from '@nestjs/common';
 import { HelperService } from 'src/helper/helper.service';
-import { BaseInterfaceRepository } from 'src/common/base.interface';
 import { IDocumentRepository } from 'src/document/document.interface';
-import { UserReq } from 'src/strategy/jwt.strategy';
 import { PaginationResDto } from 'src/common/pagination.dto';
-import { Document } from '../document/document.entity';
 import { CacheModule } from '@nestjs/cache-manager';
 
 describe('PublicDocumentService', () => {

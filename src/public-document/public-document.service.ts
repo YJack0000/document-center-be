@@ -3,10 +3,14 @@ import { IPublicDocumentRepository } from './public-document.interface';
 import { IDocumentRepository } from 'src/document/document.interface';
 import { HelperService } from 'src/helper/helper.service';
 import { PublicDocument } from './public-document.entity';
-import { UpdatePublicDocumentStatusDto } from './dto/public-document.dto';
+import {
+  PublicDocumentQueryDto,
+  UpdatePublicDocumentStatusDto,
+} from './public-document.dto';
 import { UserReq } from 'src/strategy/jwt.strategy';
 import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
 import { Cache } from 'cache-manager';
+import { Like } from 'typeorm';
 
 @Injectable()
 export class PublicDocumentService {
@@ -30,29 +34,39 @@ export class PublicDocumentService {
     await this.helper.checkOwnership(user, documentId);
     const { isPublic } = body;
     if (!isPublic) {
-      return await this.unpublishDocument(documentId);
+      return await this.helper.unpublishDocument(documentId);
     }
-    return await this.publishDocument(documentId);
+    return await this.helper.publishDocument(documentId);
   }
 
   async getAllPublicDocuments(
-    query: PaginationReqDto,
+    query: PublicDocumentQueryDto,
   ): Promise<PaginationResDto<PublicDocument>> {
-    const { page, limit } = query;
+    const { search, page, limit } = query;
     const cachKey = `allPublicDocuments-${page}-${limit}`;
-    const cacheData =
-      await this.cache.get<PaginationResDto<PublicDocument>>(cachKey);
-    if (cacheData) {
-      return cacheData;
+    if (!search) {
+      const cacheData =
+        await this.cache.get<PaginationResDto<PublicDocument>>(cachKey);
+      if (cacheData) {
+        return cacheData;
+      }
+    }
+    let filter = {};
+    if (search) {
+      filter = {
+        title: Like(`%${search}%`),
+      };
     }
     const totalAmount = await this.publicDocumentRepository.count();
     const data = await this.publicDocumentRepository.findAll({
       relations: ['owner'],
+      where: filter,
       select: {
         id: true,
         title: true,
         content: true,
         updateAt: true,
+        isPublic: true,
         owner: {
           id: true,
           name: true,
@@ -68,7 +82,9 @@ export class PublicDocumentService {
       limit: Number(limit),
       totalPage: Math.ceil(totalAmount / limit),
     };
-    await this.cache.set(cachKey, result);
+    if (!search) {
+      await this.cache.set(cachKey, result);
+    }
     return result;
   }
 
@@ -94,6 +110,7 @@ export class PublicDocumentService {
         title: true,
         content: true,
         updateAt: true,
+        isPublic: true,
         owner: {
           id: true,
           name: true,
@@ -111,25 +128,5 @@ export class PublicDocumentService {
     };
     await this.cache.set(cachKey, result);
     return result;
-  }
-
-  private async publishDocument(documentId: string): Promise<PublicDocument> {
-    const document = await this.documentRepository.findOne({
-      where: { id: documentId, status: 'pass' },
-    });
-    if (!document) {
-      throw new NotFoundException('Document not found or not pass review');
-    }
-    const publicDocument = this.publicDocumentRepository.create(document);
-    return await this.publicDocumentRepository.save(publicDocument);
-  }
-
-  private async unpublishDocument(documentId: string): Promise<PublicDocument> {
-    const publicDocument =
-      await this.publicDocumentRepository.findOneById(documentId);
-    if (!publicDocument) {
-      throw new NotFoundException('Public document not found');
-    }
-    return await this.publicDocumentRepository.removeById(documentId);
   }
 }

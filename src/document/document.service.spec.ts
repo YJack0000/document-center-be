@@ -9,10 +9,11 @@ import { MockReviewRepository } from 'src/mockRepositories/mockReviewRepo';
 import { Logger } from '@nestjs/common';
 import { HelperService } from 'src/helper/helper.service';
 import { MockHelperService } from 'src/mockRepositories/mockHelperRepo';
-import { CacheModule } from '@nestjs/cache-manager';
+import { CacheModule } from '@nestjs/cache-manager
 import { PaginationReqDto } from 'src/common/pagination.dto';
 import { UserReq } from 'src/strategy/jwt.strategy';
 import { UpdateStatusDto } from './dto/document.dto';
+import { IPublicDocumentRepository } from 'src/public-document/public-document.interface';
 
 describe('DocumentService', () => {
     let service: DocumentService;
@@ -37,6 +38,10 @@ describe('DocumentService', () => {
                 {
                     provide: IReviewRepository,
                     useValue: new MockReviewRepository() as unknown as IReviewRepository,
+                },
+                {
+                    provide: IPublicDocumentRepository,
+                    useValue: new MockReviewRepository() as unknown as IPublicDocumentRepository,
                 },
                 {
                     provide: Logger,

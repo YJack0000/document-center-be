@@ -18,6 +18,9 @@ export class PublicDocument {
   @Column()
   updateAt: Date;
 
+  @Column({ default: false })
+  isPublic: boolean;
+
   @ManyToOne(() => User, (user) => user.publicDocuments)
   @JoinColumn({ name: 'ownerId' })
   owner: User;

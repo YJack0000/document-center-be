@@ -17,9 +17,10 @@ import { DocumentService } from '../document/document.service';
 import { Document } from '../document/document.entity';
 import {
   CreateDocumentDto,
+  DocumentQueryDto,
   UpdateDocumentDto,
   UpdateStatusDto,
-} from 'src/document/dto/document.dto';
+} from 'src/document/document.dto';
 import { UserGuard } from 'src/guard/user.guard';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { PaginationReqDto, PaginationResDto } from 'src/common/pagination.dto';
@@ -32,7 +33,7 @@ export class DocumentController {
   @Get('/all')
   @UseGuards(JwtAuthGuard, SuperUserGuard)
   async getAllDocuments(
-    @Query(new ValidationPipe({ transform: true })) query: PaginationReqDto,
+    @Query(new ValidationPipe({ transform: true })) query: DocumentQueryDto,
     @Res() res,
   ): Promise<PaginationResDto<Document>> {
     const result = await this.documentService.getAllDocuments(query);

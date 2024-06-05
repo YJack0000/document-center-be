@@ -22,7 +22,6 @@ import { UploadImageModule } from './upload-image/upload-image.module';
 import { MinioModule } from './minio/minio.module';
 import { MailerModule } from 'nestjs-mailer';
 import { CacheModule } from '@nestjs/cache-manager';
-import { RedisClientOptions } from 'redis';
 import { redisStore } from 'cache-manager-redis-yet';
 
 @Module({

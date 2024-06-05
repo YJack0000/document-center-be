@@ -11,7 +11,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 import { UserGuard } from 'src/guard/user.guard';
 import { UploadImageService } from 'src/upload-image/upload-image.service';
@@ -30,9 +29,9 @@ export class UploadImageController {
 
   @Get('/:fileName')
   @UseGuards(JwtAuthGuard, UserGuard)
-  async getImageUrl(@Param('fileName') fileName: string, @Res() res) {
-    const url = await this.uploadImageService.getImageUrl(fileName);
-    return res.status(HttpStatus.OK).json({ url });
+  async getImageStream(@Param('fileName') fileName: string, @Res() res) {
+    const stream = await this.uploadImageService.getImageStream(fileName);
+    stream.pipe(res);
   }
 
   @Delete('/:fileName')
