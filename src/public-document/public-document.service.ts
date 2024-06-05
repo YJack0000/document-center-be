@@ -60,7 +60,7 @@ export class PublicDocumentService {
     const totalAmount = await this.publicDocumentRepository.count();
     const data = await this.publicDocumentRepository.findAll({
       relations: ['owner'],
-      where: filter,
+      where: {...filter, isPublic: true},
       select: {
         id: true,
         title: true,
@@ -104,7 +104,7 @@ export class PublicDocumentService {
     });
     const data = await this.publicDocumentRepository.findAll({
       relations: ['owner'],
-      where: { ownerId: userId },
+      where: { ownerId: userId, isPublic: true },
       select: {
         id: true,
         title: true,
